@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SUNBURN Overlay</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
 
@@ -35,6 +36,15 @@
             font-family: 'Rajdhani', sans-serif;
         }
 
+        /* ── Canvas BG ── */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
 
         /* ── FOV Circle ── */
         #fovCircle {
@@ -309,6 +319,18 @@
             display: flex;
         }
 
+        /* ── Milk Layer ── */
+        .milk-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 18px;
+            overflow: hidden;
+        }
 
         /* ── Menu Content ── */
         .menu-content {
@@ -700,6 +722,8 @@
         </div>
     </div>
 
+    <!-- 3D Background — transparent so app behind is visible -->
+    <div id="canvas-container" style="pointer-events:none;"></div>
 
 
     <!-- Main Menu -->
@@ -725,6 +749,8 @@
             <div class="tab-btn" onclick="switchTab(this,'config')">Config</div>
         </div>
 
+        <!-- Milk Layer -->
+        <div class="milk-layer" id="milkLayer"></div>
 
         <!-- ══ Tab: Combat ══ -->
         <div class="tab-panel active" id="tab-combat">
@@ -1126,8 +1152,89 @@
         document.addEventListener('touchmove', e => { if (!dragging) return; e.preventDefault(); const t = e.touches[0]; onDragMove(t.clientX, t.clientY); }, { passive: false });
         document.addEventListener('touchend', onDragEnd);
 
-        // ── Start setup ──
-        setTimeout(syncTouchableRegion, 500);
+        // ══════════════════════════════════════════════════
+        //  THREE.JS — Milk layer only (transparent bg)
+        // ══════════════════════════════════════════════════
+
+        // — Milk Layer
+        const milkContainer = document.getElementById('milkLayer');
+        const milkScene = new THREE.Scene();
+        const milkCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        milkCamera.position.z = 1;
+        const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        milkContainer.appendChild(milkRenderer.domElement);
+        function resizeMilk() { milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight); }
+        resizeMilk();
+
+        const milkUniforms = { time: { value: 0 }, resolution: { value: new THREE.Vector2() } };
+        const milkMat = new THREE.ShaderMaterial({
+            uniforms: milkUniforms,
+            vertexShader: `
+            uniform float time;
+            varying vec2 vUv;
+            varying float vWave;
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+                float surface = smoothstep(-0.6, 1.0, pos.y);
+                float w1 = sin(pos.x * 3.5 + time * 5.0) * 0.045;
+                float w2 = cos(pos.x * 6.2 - time * 3.8) * 0.022;
+                float w3 = sin(pos.x * 9.0 + time * 7.5) * 0.009;
+                float wave = (w1 + w2 + w3) * surface;
+                vWave = wave;
+                pos.y += wave;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `,
+            fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+            varying float vWave;
+
+            float rand(vec2 co) {
+                return fract(sin(dot(co, vec2(12.9898,78.233))) * 43758.5453);
+            }
+
+            void main() {
+                // Base milk gradient: deep blue-grey at bottom, near-white at top
+                vec3 deep   = vec3(0.78, 0.80, 0.88);
+                vec3 mid    = vec3(0.90, 0.91, 0.96);
+                vec3 surf   = vec3(0.97, 0.97, 1.00);
+                vec3 base   = mix(deep, mid, vUv.y);
+                base        = mix(base, surf, pow(vUv.y, 2.5));
+
+                // Surface shimmer highlight — thin band at the wave surface
+                float surfaceBand = smoothstep(0.0, 0.06, vWave + 0.01);
+                float shimmer = surfaceBand * (0.5 + 0.5 * sin(vUv.x * 40.0 + time * 8.0));
+                base += shimmer * vec3(1.0, 1.0, 1.0) * 0.07;
+
+                // Subtle lateral caustic ripples
+                float caustic = sin(vUv.x * 22.0 + time * 3.5) * sin(vUv.x * 13.0 - time * 2.1);
+                caustic = max(0.0, caustic) * vUv.y * 0.04;
+                base += caustic;
+
+                // Slight depth tint on the very bottom edge
+                float edge = 1.0 - smoothstep(0.0, 0.12, vUv.y);
+                base = mix(base, vec3(0.70, 0.73, 0.84), edge * 0.4);
+
+                gl_FragColor = vec4(clamp(base, 0.0, 1.0), 0.97);
+            }
+        `,
+            transparent: true
+        });
+        const milkMesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 2, 64, 32), milkMat);
+        milkMesh.position.y = -1.0;
+        milkScene.add(milkMesh);
+
+        window.addEventListener('resize', resizeMilk);
+
+        // ── Render loop ──
+        function animate() {
+            requestAnimationFrame(animate);
+            milkUniforms.time.value += 0.015;
+            milkRenderer.render(milkScene, milkCamera);
+        }
+        animate();
         setTimeout(syncTouchableRegion, 500);
     </script>
 </body>
