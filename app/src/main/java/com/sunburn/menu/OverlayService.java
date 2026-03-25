@@ -14,10 +14,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.net.Uri;
+import android.widget.Toast;
+import android.webkit.WebResourceRequest;
 import androidx.core.app.NotificationCompat;
 
 public class OverlayService extends Service {
@@ -73,7 +72,40 @@ public class OverlayService extends Service {
         settings.setAllowContentAccess(true);
         
         webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false;
+                }
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "No compatible app found for this link", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false;
+                }
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "No compatible app found for this link", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+        });
         webView.loadUrl("file:///android_asset/index.html");
     }
 

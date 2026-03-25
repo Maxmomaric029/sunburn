@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -38,19 +39,22 @@
         /* ── Canvas BG ── */
         #canvas-container {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
         }
 
         /* ── FOV Circle ── */
         #fovCircle {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            border: 1.5px solid rgba(255,255,255,0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
-            box-shadow: 0 0 14px rgba(200,216,255,0.25);
+            box-shadow: 0 0 14px rgba(200, 216, 255, 0.25);
             pointer-events: none;
             display: none;
             z-index: 9999;
@@ -60,8 +64,10 @@
         /* ── Modal ── */
         #mySensiModal {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -77,14 +83,21 @@
             border-radius: 16px;
             padding: 40px 36px;
             text-align: center;
-            box-shadow: 0 0 40px rgba(200,216,255,0.15), 0 20px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 0 40px rgba(200, 216, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.9);
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-title {
@@ -117,13 +130,19 @@
             box-shadow: 0 0 20px var(--glow);
         }
 
-        .modal-btn:active { transform: scale(0.95); }
-        .modal-btn:hover { box-shadow: 0 0 28px var(--glow); }
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn:hover {
+            box-shadow: 0 0 28px var(--glow);
+        }
 
         /* ── Main Menu ── */
         .mod-menu {
             position: fixed;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             width: 370px;
             height: 86vh;
@@ -132,7 +151,7 @@
             -webkit-backdrop-filter: blur(20px) saturate(160%);
             border: 1px solid var(--glass-border);
             border-radius: 18px;
-            box-shadow: 0 30px 70px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.04);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.04);
             display: flex;
             flex-direction: column;
             z-index: 10;
@@ -142,11 +161,21 @@
         }
 
         @keyframes menuSlideIn {
-            0% { opacity: 0; transform: translate(-50%, -44%) scale(0.96); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -46%) scale(0.96);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
         }
 
-        .mod-menu.dragging { box-shadow: 0 40px 90px rgba(0,0,0,0.99); }
+        .mod-menu.dragging {
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.99);
+            transition: box-shadow 0.1s;
+        }
 
         /* ── Header ── */
         .menu-header {
@@ -161,15 +190,18 @@
             flex-shrink: 0;
             cursor: grab;
         }
-        .menu-header:active { cursor: grabbing; }
+
+        .menu-header:active {
+            cursor: grabbing;
+        }
 
         .header-logo {
             width: 36px;
             height: 36px;
             border-radius: 8px;
             object-fit: cover;
-            border: 1px solid rgba(255,77,28,0.4);
-            box-shadow: 0 0 12px rgba(200,216,255,0.18);
+            border: 1px solid rgba(255, 77, 28, 0.4);
+            box-shadow: 0 0 12px rgba(200, 216, 255, 0.18);
             flex-shrink: 0;
         }
 
@@ -178,8 +210,8 @@
             height: 36px;
             border-radius: 8px;
             background: linear-gradient(135deg, var(--accent), var(--accent2));
-            border: 1px solid rgba(255,77,28,0.5);
-            box-shadow: 0 0 14px rgba(255,77,28,0.4);
+            border: 1px solid rgba(255, 77, 28, 0.5);
+            box-shadow: 0 0 14px rgba(255, 77, 28, 0.4);
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -201,7 +233,7 @@
             letter-spacing: 6px;
             text-transform: uppercase;
             color: #fff;
-            text-shadow: 0 0 20px rgba(255,77,28,0.6), 0 2px 8px rgba(0,0,0,0.9);
+            text-shadow: 0 0 20px rgba(255, 77, 28, 0.6), 0 2px 8px rgba(0, 0, 0, 0.9);
             line-height: 1;
             display: block;
         }
@@ -225,12 +257,16 @@
             transition: color 0.2s, transform 0.2s;
             padding: 4px;
         }
-        .close-btn:hover { color: #fff; transform: rotate(90deg); }
+
+        .close-btn:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
 
         /* ── Tabs ── */
         .tab-bar {
             display: flex;
-            background: rgba(0,0,0,0.35);
+            background: rgba(0, 0, 0, 0.35);
             border-bottom: 1px solid var(--glass-border);
             flex-shrink: 0;
             position: relative;
@@ -253,7 +289,9 @@
         .tab-btn::after {
             content: '';
             position: absolute;
-            bottom: 0; left: 20%; right: 20%;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
             height: 2px;
             background: var(--accent);
             border-radius: 2px 2px 0 0;
@@ -262,8 +300,13 @@
             box-shadow: 0 0 8px var(--glow);
         }
 
-        .tab-btn.active { color: #fff; }
-        .tab-btn.active::after { transform: scaleX(1); }
+        .tab-btn.active {
+            color: #fff;
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
 
         /* ── Tab Panels ── */
         .tab-panel {
@@ -271,13 +314,18 @@
             flex-direction: column;
             height: 100%;
         }
-        .tab-panel.active { display: flex; }
+
+        .tab-panel.active {
+            display: flex;
+        }
 
         /* ── Milk Layer ── */
         .milk-layer {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
             border-radius: 18px;
@@ -289,18 +337,29 @@
             padding: 0;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(200,216,255,0.18) transparent;
+            scrollbar-color: rgba(200, 216, 255, 0.18) transparent;
             position: relative;
             z-index: 2;
             height: 100%;
             flex: 1;
         }
 
-        .menu-content::-webkit-scrollbar { width: 3px; }
-        .menu-content::-webkit-scrollbar-track { background: transparent; }
-        .menu-content::-webkit-scrollbar-thumb { background-color: rgba(200,216,255,0.18); border-radius: 10px; }
+        .menu-content::-webkit-scrollbar {
+            width: 3px;
+        }
 
-        .content-inner { padding: 18px 18px 28px; }
+        .menu-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .menu-content::-webkit-scrollbar-thumb {
+            background-color: rgba(200, 216, 255, 0.18);
+            border-radius: 10px;
+        }
+
+        .content-inner {
+            padding: 18px 18px 28px;
+        }
 
         /* ── Section Banner ── */
         .section-banner {
@@ -310,7 +369,7 @@
             background-position: center;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid rgba(200,216,255,0.12);
+            border: 1px solid rgba(200, 216, 255, 0.12);
             display: flex;
             align-items: flex-end;
             justify-content: flex-start;
@@ -324,10 +383,13 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 60%);
         }
 
-        .section-banner:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+        .section-banner:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
 
         .section-title {
             color: #fff;
@@ -347,16 +409,40 @@
         }
 
         @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .control-group:nth-child(1) { animation-delay: 0.05s; }
-        .control-group:nth-child(2) { animation-delay: 0.10s; }
-        .control-group:nth-child(3) { animation-delay: 0.15s; }
-        .control-group:nth-child(4) { animation-delay: 0.20s; }
-        .control-group:nth-child(5) { animation-delay: 0.25s; }
-        .control-group:nth-child(6) { animation-delay: 0.30s; }
+        .control-group:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .control-group:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .control-group:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .control-group:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .control-group:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .control-group:nth-child(6) {
+            animation-delay: 0.30s;
+        }
 
         .control-header {
             display: flex;
@@ -378,31 +464,45 @@
         }
 
         /* ── Switches ── */
-        .switch-container { display: inline-flex; align-items: center; cursor: pointer; }
+        .switch-container {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
         .switch-track {
-            width: 38px; height: 20px;
-            background: rgba(255,255,255,0.1);
+            width: 38px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             position: relative;
             transition: background 0.3s, border-color 0.3s;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
+
         .switch-thumb {
-            width: 14px; height: 14px;
-            background: rgba(255,255,255,0.5);
+            width: 14px;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             position: absolute;
-            top: 2px; left: 2px;
+            top: 2px;
+            left: 2px;
             transition: transform 0.3s, background 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
-        .switch-container input[type="checkbox"] { display: none; }
-        .switch-container input[type="checkbox"]:checked + .switch-track {
+
+        .switch-container input[type="checkbox"] {
+            display: none;
+        }
+
+        .switch-container input[type="checkbox"]:checked+.switch-track {
             background: var(--accent);
             border-color: var(--accent);
             box-shadow: 0 0 10px var(--glow);
         }
-        .switch-container input[type="checkbox"]:checked + .switch-track .switch-thumb {
+
+        .switch-container input[type="checkbox"]:checked+.switch-track .switch-thumb {
             transform: translateX(18px);
             background: #fff;
         }
@@ -416,24 +516,31 @@
             display: flex;
             align-items: center;
         }
-        input[type=range]:focus { outline: none; }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
             cursor: pointer;
-            background: linear-gradient(to right, var(--fill-c, var(--accent)) var(--perc, 0%), var(--empty-c, rgba(255,255,255,0.1)) var(--perc, 0%));
+            background: linear-gradient(to right, var(--fill-c, var(--accent)) var(--perc, 0%), var(--empty-c, rgba(255, 255, 255, 0.1)) var(--perc, 0%));
             border-radius: 10px;
         }
+
         input[type=range]::-webkit-slider-thumb {
-            height: 14px; width: 14px;
+            height: 14px;
+            width: 14px;
             border-radius: 50%;
             background: #fff;
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 6px var(--glow);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 6px var(--glow);
             transition: transform 0.1s, box-shadow 0.1s;
         }
+
         input[type=range]::-webkit-slider-thumb:active {
             transform: scale(1.4);
             box-shadow: 0 0 14px var(--glow);
@@ -443,7 +550,7 @@
         .target-selector {
             display: flex;
             gap: 5px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 4px;
             border-radius: 8px;
             border: 1px solid var(--glass-border);
@@ -461,6 +568,7 @@
             border-radius: 5px;
             transition: all 0.2s;
         }
+
         .target-btn.active {
             background: var(--accent);
             color: #fff;
@@ -472,7 +580,7 @@
             width: 100%;
             padding: 11px;
             background: transparent;
-            border: 1px solid rgba(200,216,255,0.2);
+            border: 1px solid rgba(200, 216, 255, 0.2);
             color: var(--accent);
             font-family: 'Bebas Neue', sans-serif;
             font-size: 16px;
@@ -482,41 +590,83 @@
             transition: all 0.2s;
             margin-top: 8px;
         }
+
         .action-btn:hover {
-            background: rgba(200,216,255,0.08);
-            box-shadow: 0 0 16px rgba(200,216,255,0.12);
+            background: rgba(200, 216, 255, 0.08);
+            box-shadow: 0 0 16px rgba(200, 216, 255, 0.12);
         }
-        .action-btn:active { transform: scale(0.98); }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
 
         /* ── Divider ── */
         .divider {
             height: 1px;
-            background: linear-gradient(to right, transparent, rgba(200,216,255,0.15), transparent);
+            background: linear-gradient(to right, transparent, rgba(200, 216, 255, 0.15), transparent);
             margin: 6px 0 22px;
         }
 
         /* ── Submerged styles ── */
         .submerged .control-header span,
-        .submerged .control-value { color: #111 !important; text-shadow: none !important; }
-        .submerged .control-value { color: #333 !important; }
-        .submerged input[type=range]::-webkit-slider-runnable-track {
-            background: linear-gradient(to right, #222 var(--perc,0%), rgba(0,0,0,0.12) var(--perc,0%)) !important;
+        .submerged .control-value {
+            color: #111 !important;
+            text-shadow: none !important;
         }
+
+        .submerged .control-value {
+            color: #333 !important;
+        }
+
+        .submerged input[type=range]::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #222 var(--perc, 0%), rgba(0, 0, 0, 0.12) var(--perc, 0%)) !important;
+        }
+
         .submerged input[type=range]::-webkit-slider-thumb {
             background: #111 !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
         }
-        .submerged .target-btn { color: #333 !important; }
-        .submerged .target-btn.active { background: #111 !important; color: #fff !important; box-shadow: none !important; }
-        .submerged .action-btn { border-color: rgba(0,0,0,0.25) !important; color: #111 !important; }
-        .submerged .action-btn:hover { background: rgba(0,0,0,0.08) !important; }
-        .submerged .switch-track { background: rgba(0,0,0,0.12) !important; border-color: rgba(0,0,0,0.2) !important; }
-        .submerged .switch-thumb { background: #555 !important; }
-        .submerged input[type="checkbox"]:checked + .switch-track { background: #111 !important; border-color: #111 !important; box-shadow: none !important; }
-        .submerged input[type="checkbox"]:checked + .switch-track .switch-thumb { background: #fff !important; }
+
+        .submerged .target-btn {
+            color: #333 !important;
+        }
+
+        .submerged .target-btn.active {
+            background: #111 !important;
+            color: #fff !important;
+            box-shadow: none !important;
+        }
+
+        .submerged .action-btn {
+            border-color: rgba(0, 0, 0, 0.25) !important;
+            color: #111 !important;
+        }
+
+        .submerged .action-btn:hover {
+            background: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .submerged .switch-track {
+            background: rgba(0, 0, 0, 0.12) !important;
+            border-color: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .submerged .switch-thumb {
+            background: #555 !important;
+        }
+
+        .submerged input[type="checkbox"]:checked+.switch-track {
+            background: #111 !important;
+            border-color: #111 !important;
+            box-shadow: none !important;
+        }
+
+        .submerged input[type="checkbox"]:checked+.switch-track .switch-thumb {
+            background: #fff !important;
+        }
 
         .submerged-title {
-            background: rgba(255,255,255,0.92) !important;
+            background: rgba(255, 255, 255, 0.92) !important;
             color: #000 !important;
             text-shadow: none !important;
         }
@@ -525,7 +675,7 @@
         #waGate {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             z-index: 999999;
@@ -533,33 +683,42 @@
             justify-content: center;
             align-items: center;
         }
+
         .wa-box {
-            background: rgba(10,10,14,0.97);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10, 10, 14, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 44px 36px;
             text-align: center;
             max-width: 88%;
             animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
         }
+
         .wa-logo {
-            width: 52px; height: 52px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             object-fit: cover;
             margin: 0 auto 18px;
             display: block;
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
+
         .wa-logo-fb {
-            width: 52px; height: 52px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
-            background: linear-gradient(135deg,#fff,#ccc);
+            background: linear-gradient(135deg, #fff, #ccc);
             margin: 0 auto 18px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px; color: #000;
+            font-size: 22px;
+            color: #000;
         }
+
         .wa-title {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 28px;
@@ -567,20 +726,23 @@
             color: #fff;
             margin-bottom: 8px;
         }
+
         .wa-sub {
             font-family: 'Space Mono', monospace;
             font-size: 10px;
-            color: rgba(255,255,255,0.4);
+            color: rgba(255, 255, 255, 0.4);
             letter-spacing: 2px;
             margin-bottom: 28px;
         }
+
         .wa-desc {
             font-family: 'Rajdhani', sans-serif;
             font-size: 15px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 28px;
             line-height: 1.6;
         }
+
         .wa-btn {
             display: inline-flex;
             align-items: center;
@@ -596,32 +758,51 @@
             cursor: pointer;
             text-decoration: none;
             transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 0 24px rgba(37,211,102,0.3);
+            box-shadow: 0 0 24px rgba(37, 211, 102, 0.3);
         }
-        .wa-btn:hover { transform: scale(1.03); box-shadow: 0 0 32px rgba(37,211,102,0.45); }
-        .wa-btn:active { transform: scale(0.97); }
-        .wa-btn svg { width:20px; height:20px; fill:#fff; flex-shrink:0; }
+
+        .wa-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 32px rgba(37, 211, 102, 0.45);
+        }
+
+        .wa-btn:active {
+            transform: scale(0.97);
+        }
+
+        .wa-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #fff;
+            flex-shrink: 0;
+        }
+
         .wa-enter {
             display: block;
             margin-top: 18px;
             font-family: 'Space Mono', monospace;
             font-size: 10px;
-            color: rgba(255,255,255,0.2);
+            color: rgba(255, 255, 255, 0.2);
             cursor: pointer;
             letter-spacing: 1px;
             transition: color 0.2s;
         }
-        .wa-enter:hover { color: rgba(255,255,255,0.45); }
+
+        .wa-enter:hover {
+            color: rgba(255, 255, 255, 0.45);
+        }
 
         /* ── Reopen Icon ── */
         #reopenIcon {
             display: none;
             position: fixed;
-            top: 18px; left: 18px;
-            width: 44px; height: 44px;
+            top: 18px;
+            left: 18px;
+            width: 44px;
+            height: 44px;
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(200,216,255,0.18);
+            border: 1px solid rgba(200, 216, 255, 0.18);
             border-radius: 10px;
             color: var(--text-main);
             font-family: 'Bebas Neue', sans-serif;
@@ -631,18 +812,24 @@
             letter-spacing: 1px;
             cursor: pointer;
             z-index: 10000;
-            box-shadow: 0 0 14px rgba(200,216,255,0.15);
+            box-shadow: 0 0 14px rgba(200, 216, 255, 0.15);
             animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to   { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
-
-
     </style>
 </head>
+
 <body>
 
     <div id="fovCircle"></div>
@@ -680,13 +867,15 @@
             animation: popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) both;
         ">
             <div style="font-size:44px;margin-bottom:16px;">💬</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:#fff;margin-bottom:8px;">ACCESO REQUERIDO</div>
-            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:28px;line-height:1.6;">
+            <div
+                style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:#fff;margin-bottom:8px;">
+                ACCESO REQUERIDO</div>
+            <div
+                style="font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:28px;line-height:1.6;">
                 Para usar SUNBURN debes<br>unirte al grupo de WhatsApp
             </div>
             <a href="https://chat.whatsapp.com/BEspMtKkGOsBWM5y36ZhqI" target="_blank"
-               onclick="setTimeout(()=>{ document.getElementById('waGate').style.display='none'; },1500)"
-               style="
+                onclick="setTimeout(()=>{ document.getElementById('waGate').style.display='none'; },1500)" style="
                 display:inline-block;
                 background:#25D366;
                 color:#fff;
@@ -699,7 +888,9 @@
                 box-shadow:0 0 20px rgba(37,211,102,0.3);
                 transition:box-shadow 0.2s;
             ">Unirse al Grupo</a>
-            <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:2px;">By 9B BLOODIE</div>
+            <div
+                style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:2px;">
+                By 9B BLOODIE</div>
         </div>
     </div>
 
@@ -708,7 +899,9 @@
 
         <!-- Header -->
         <div class="menu-header">
-            <img src="LOGO.jpeg" class="header-logo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';" alt="Logo">
+            <img src="LOGO.jpeg" class="header-logo"
+                onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';"
+                alt="Logo">
             <div class="header-logo-placeholder" id="logoFallback" style="display:none;">S</div>
             <div class="header-text">
                 <span class="menu-title">SUNBURN</span>
@@ -731,12 +924,14 @@
         <div class="tab-panel active" id="tab-combat">
             <div class="menu-content" id="menuContent-combat">
                 <div class="content-inner">
-                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/d0/1a/5d/d01a5d62d2a2e90e3a96fdbba7113dce.gif');">
+                    <div class="section-banner submerged-banner-check"
+                        style="background-image: url('https://i.pinimg.com/originals/d0/1a/5d/d01a5d62d2a2e90e3a96fdbba7113dce.gif');">
                         <div class="section-title submerged-banner-title" id="title-combat">⚔ Combat</div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>Aimlock FOV</span><span class="control-value" id="val-fov">0°</span></div>
+                        <div class="control-header"><span>Aimlock FOV</span><span class="control-value"
+                                id="val-fov">0°</span></div>
                         <input type="range" id="fov" min="0" max="360" value="0" oninput="updateFOV(this.value)">
                     </div>
 
@@ -751,39 +946,82 @@
                     <div class="divider"></div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>HS Rate</span><span class="control-value" id="val-hs">0%</span></div>
-                        <input type="range" id="hs" min="0" max="100" value="0">
+                        <div class="control-header">
+                            <span>HS Rate</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="hs">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>No Recoil</span><span class="control-value" id="val-recoil">0%</span></div>
-                        <input type="range" id="recoil" min="0" max="100" value="0">
+                        <div class="control-header">
+                            <span>No Recoil</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="recoil">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>Easy Head</span><span class="control-value" id="val-easyhead">0%</span></div>
-                        <input type="range" id="easyhead" min="0" max="100" value="0">
+                        <div class="control-header">
+                            <span>Easy Head</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="easyhead">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="divider"></div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>Aimbot — Rage</span><span class="control-value" id="val-aim_rage">OFF</span></div>
-                        <input type="range" id="aim_rage" min="0" max="1" value="0">
+                        <div class="control-header">
+                            <span>Aimbot — Rage</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="aim_rage">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>SemiAimbot — AWP</span><span class="control-value" id="val-aim_awp">OFF</span></div>
-                        <input type="range" id="aim_awp" min="0" max="1" value="0">
+                        <div class="control-header">
+                            <span>SemiAimbot — AWP</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="aim_awp">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>Fully Aimbot — Script</span><span class="control-value" id="val-aim_script">OFF</span></div>
-                        <input type="range" id="aim_script" min="0" max="1" value="0">
+                        <div class="control-header">
+                            <span>Fully Aimbot — Script</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="aim_script">
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>Aimbot — M1018</span><span class="control-value" id="val-aim_m1018">OFF</span></div>
+                        <div class="control-header"><span>Aimbot — M1018</span><span class="control-value"
+                                id="val-aim_m1018">OFF</span></div>
                         <input type="range" id="aim_m1018" min="0" max="1" value="0">
                     </div>
                 </div>
@@ -794,17 +1032,20 @@
         <div class="tab-panel" id="tab-blood">
             <div class="menu-content" id="menuContent-blood">
                 <div class="content-inner">
-                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/b8/6f/e5/b86fe51d6dbf77b7b698b13ae3c56335.gif');">
+                    <div class="section-banner submerged-banner-check"
+                        style="background-image: url('https://i.pinimg.com/originals/b8/6f/e5/b86fe51d6dbf77b7b698b13ae3c56335.gif');">
                         <div class="section-title submerged-banner-title" id="title-blood">🩸 Blood</div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>👺 Regedit Full Vermelho</span><span class="control-value" id="val-regedit">0%</span></div>
+                        <div class="control-header"><span>👺 Regedit Full Vermelho</span><span class="control-value"
+                                id="val-regedit">0%</span></div>
                         <input type="range" id="regedit" min="0" max="100" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header"><span>💀 Auxilio Gruda [VIP]</span><span class="control-value" id="val-gruda">0%</span></div>
+                        <div class="control-header"><span>💀 Auxilio Gruda [VIP]</span><span class="control-value"
+                                id="val-gruda">0%</span></div>
                         <input type="range" id="gruda" min="0" max="100" value="0">
                     </div>
                 </div>
@@ -815,7 +1056,8 @@
         <div class="tab-panel" id="tab-config">
             <div class="menu-content" id="menuContent-config">
                 <div class="content-inner">
-                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/09/fa/e4/09fae4879b5c83ac5620f3e0b75156fb.gif');">
+                    <div class="section-banner submerged-banner-check"
+                        style="background-image: url('https://i.pinimg.com/originals/09/fa/e4/09fae4879b5c83ac5620f3e0b75156fb.gif');">
                         <div class="section-title submerged-banner-title" id="title-config">⚙ Config</div>
                     </div>
 
@@ -824,7 +1066,9 @@
                             <span>Sensi Bloodz</span>
                             <label class="switch-container">
                                 <input type="checkbox" id="bloodz">
-                                <div class="switch-track"><div class="switch-thumb"></div></div>
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -834,7 +1078,9 @@
                             <span>Sensi Bloodie</span>
                             <label class="switch-container">
                                 <input type="checkbox" id="bloodie">
-                                <div class="switch-track"><div class="switch-thumb"></div></div>
+                                <div class="switch-track">
+                                    <div class="switch-thumb"></div>
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -853,233 +1099,229 @@
     <div id="reopenIcon" onclick="toggleMenu()">S</div>
 
     <script>
-    // ══════════════════════════════
-    //  Tabs
-    // ══════════════════════════════
-    function switchTab(btn, id) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + id).classList.add('active');
-        // Re-trigger animations
-        document.querySelectorAll('#tab-' + id + ' .control-group').forEach((el, i) => {
-            el.style.animation = 'none';
-            void el.offsetWidth;
-            el.style.animation = '';
-            el.style.animationDelay = (0.04 * i) + 's';
-        });
-        setTimeout(() => updateSubmergedStyles(), 50);
-    }
-
-    // ══════════════════════════════
-    //  FOV Circle
-    // ══════════════════════════════
-    let fovTimeout;
-    const fovCircle = document.getElementById('fovCircle');
-
-    function updateFOV(val) {
-        updateSlider('fov', 'val-fov', '°');
-        fovCircle.style.display = 'block';
-        const size = val * 1.5;
-        fovCircle.style.width = size + 'px';
-        fovCircle.style.height = size + 'px';
-        clearTimeout(fovTimeout);
-        fovTimeout = setTimeout(() => { fovCircle.style.display = 'none'; }, 900);
-    }
-
-    function setTarget(el) {
-        for (let s of el.parentElement.children) s.classList.remove('active');
-        el.classList.add('active');
-    }
-
-    // ══════════════════════════════
-    //  Sensi Modal
-    // ══════════════════════════════
-    const sensiList = [
-        "Strongest Sorcerer","Ninja Slayer","King of Heroes","Throne Remnant",
-        "Ancient Shard","Golden Essence","King of Heroes Armor","Phantasm Core",
-        "Manipulator","Solo Hunter","Gryphon","Excalibur","Dark Blade","Katana",
-        "Blessed Maiden","Tempest Relic","Corrupted Knight","Dark Grail",
-        "Curse King","Light","Blood","D"
-    ];
-    const sensiColors = [
-        '#ff3b30','#ff9500','#34c759','#00c7be','#32ade6',
-        '#007aff','#5856d6','#af52de','#ff2d55','#ff8a65','#39ff14'
-    ];
-
-    function openModal() {
-        const nd = document.getElementById('sensiNameDisplay');
-        const name = sensiList[Math.floor(Math.random() * sensiList.length)];
-        const color = sensiColors[Math.floor(Math.random() * sensiColors.length)];
-        nd.innerText = name;
-        nd.style.color = color;
-        nd.style.textShadow = `0 0 15px ${color}, 0 0 30px ${color}`;
-        document.getElementById('mySensiModal').style.display = 'flex';
-    }
-    function closeModal() {
-        document.getElementById('mySensiModal').style.display = 'none';
-    }
-
-    // ══════════════════════════════
-    //  Sliders
-    // ══════════════════════════════
-    function updateSlider(id, valId, suffix) {
-        const slider = document.getElementById(id);
-        const text = document.getElementById(valId);
-        if (!slider || !text) return;
-        if (slider.max === "1") {
-            text.innerText = slider.value === "1" ? "ON" : "OFF";
-        } else {
-            text.innerText = slider.value + suffix;
+        // ══════════════════════════════
+        //  Tabs
+        // ══════════════════════════════
+        function switchTab(btn, id) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + id).classList.add('active');
+            // Re-trigger animations
+            document.querySelectorAll('#tab-' + id + ' .control-group').forEach((el, i) => {
+                el.style.animation = 'none';
+                void el.offsetWidth;
+                el.style.animation = '';
+                el.style.animationDelay = (0.04 * i) + 's';
+            });
+            setTimeout(() => updateSubmergedStyles(), 50);
         }
-        const min = slider.min || 0;
-        const max = slider.max || 100;
-        const pct = ((slider.value - min) / (max - min)) * 100;
-        const isSubmerged = slider.closest('.control-group').classList.contains('submerged');
-        slider.style.setProperty('--perc', pct + '%');
-        slider.style.setProperty('--fill-c', isSubmerged ? '#222' : 'var(--accent)');
-        slider.style.setProperty('--empty-c', isSubmerged ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)');
-    }
 
-    const sliderDefs = [
-        {id:'fov',   suf:'°'},
-        {id:'hs',    suf:'%'},
-        {id:'recoil',suf:'%'},
-        {id:'easyhead',suf:'%'},
-        {id:'aim_rage',suf:''},
-        {id:'aim_awp',suf:''},
-        {id:'aim_script',suf:''},
-        {id:'aim_m1018',suf:''},
-        {id:'regedit',suf:'%'},
-        {id:'gruda', suf:'%'},
-    ];
+        // ══════════════════════════════
+        //  FOV Circle
+        // ══════════════════════════════
+        let fovTimeout;
+        const fovCircle = document.getElementById('fovCircle');
 
-    sliderDefs.forEach(({id, suf}) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.value = 0;
-        updateSlider(id, 'val-' + id, suf);
-        if (id !== 'fov') {
-            el.addEventListener('input', () => updateSlider(id, 'val-' + id, suf));
+        function updateFOV(val) {
+            updateSlider('fov', 'val-fov', '°');
+            fovCircle.style.display = 'block';
+            const size = val * 1.5;
+            fovCircle.style.width = size + 'px';
+            fovCircle.style.height = size + 'px';
+            clearTimeout(fovTimeout);
+            fovTimeout = setTimeout(() => { fovCircle.style.display = 'none'; }, 900);
         }
-    });
 
-    // ══════════════════════════════
-    //  Toggle Menu
-    // ══════════════════════════════
-    function toggleMenu() {
-        const menu = document.getElementById('modMenu');
-        const icon = document.getElementById('reopenIcon');
-        if (menu.style.display === 'none') {
-            menu.style.display = 'flex';
-            icon.style.display = 'none';
-        } else {
-            menu.style.display = 'none';
-            icon.style.display = 'block';
+        function setTarget(el) {
+            for (let s of el.parentElement.children) s.classList.remove('active');
+            el.classList.add('active');
         }
-    }
 
-    // ══════════════════════════════
-    //  Submerged / Milk styles
-    // ══════════════════════════════
-    const modMenu = document.getElementById('modMenu');
+        // ══════════════════════════════
+        //  Sensi Modal
+        // ══════════════════════════════
+        const sensiList = [
+            "Strongest Sorcerer", "Ninja Slayer", "King of Heroes", "Throne Remnant",
+            "Ancient Shard", "Golden Essence", "King of Heroes Armor", "Phantasm Core",
+            "Manipulator", "Solo Hunter", "Gryphon", "Excalibur", "Dark Blade", "Katana",
+            "Blessed Maiden", "Tempest Relic", "Corrupted Knight", "Dark Grail",
+            "Curse King", "Light", "Blood", "D"
+        ];
+        const sensiColors = [
+            '#ff3b30', '#ff9500', '#34c759', '#00c7be', '#32ade6',
+            '#007aff', '#5856d6', '#af52de', '#ff2d55', '#ff8a65', '#39ff14'
+        ];
 
-    function updateSubmergedStyles() {
-        const menuRect = modMenu.getBoundingClientRect();
-        const milkLineY = menuRect.top + (menuRect.height / 2);
+        function openModal() {
+            const nd = document.getElementById('sensiNameDisplay');
+            const name = sensiList[Math.floor(Math.random() * sensiList.length)];
+            const color = sensiColors[Math.floor(Math.random() * sensiColors.length)];
+            nd.innerText = name;
+            nd.style.color = color;
+            nd.style.textShadow = `0 0 15px ${color}, 0 0 30px ${color}`;
+            document.getElementById('mySensiModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('mySensiModal').style.display = 'none';
+        }
 
-        document.querySelectorAll('.submerged-check').forEach(group => {
-            const r = group.getBoundingClientRect();
-            if (r.top > milkLineY - 10) {
-                if (!group.classList.contains('submerged')) {
-                    group.classList.add('submerged');
-                    const s = group.querySelector('input[type=range]');
-                    if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d=>d.id===s.id)?.suf||'%');
-                }
+        // ══════════════════════════════
+        //  Sliders
+        // ══════════════════════════════
+        function updateSlider(id, valId, suffix) {
+            const slider = document.getElementById(id);
+            const text = document.getElementById(valId);
+            if (!slider || !text) return;
+            if (slider.max === "1") {
+                text.innerText = slider.value === "1" ? "ON" : "OFF";
             } else {
-                if (group.classList.contains('submerged')) {
-                    group.classList.remove('submerged');
-                    const s = group.querySelector('input[type=range]');
-                    if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d=>d.id===s.id)?.suf||'%');
-                }
+                text.innerText = slider.value + suffix;
+            }
+            const min = slider.min || 0;
+            const max = slider.max || 100;
+            const pct = ((slider.value - min) / (max - min)) * 100;
+            const isSubmerged = slider.closest('.control-group').classList.contains('submerged');
+            slider.style.setProperty('--perc', pct + '%');
+            slider.style.setProperty('--fill-c', isSubmerged ? '#222' : 'var(--accent)');
+            slider.style.setProperty('--empty-c', isSubmerged ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)');
+        }
+
+        const sliderDefs = [
+            { id: 'fov', suf: '°' },
+            { id: 'aim_m1018', suf: '' },
+            { id: 'regedit', suf: '%' },
+            { id: 'gruda', suf: '%' },
+        ];
+
+        sliderDefs.forEach(({ id, suf }) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.value = 0;
+            updateSlider(id, 'val-' + id, suf);
+            if (id !== 'fov') {
+                el.addEventListener('input', () => updateSlider(id, 'val-' + id, suf));
             }
         });
 
-        document.querySelectorAll('.submerged-banner-title').forEach(title => {
-            const r = title.closest('.section-banner').getBoundingClientRect();
-            if (r.top > milkLineY - 30) title.classList.add('submerged-title');
-            else title.classList.remove('submerged-title');
+        // ══════════════════════════════
+        //  Toggle Menu
+        // ══════════════════════════════
+        function toggleMenu() {
+            const menu = document.getElementById('modMenu');
+            const icon = document.getElementById('reopenIcon');
+            if (menu.style.display === 'none') {
+                menu.style.display = 'flex';
+                icon.style.display = 'none';
+            } else {
+                menu.style.display = 'none';
+                icon.style.display = 'block';
+            }
+        }
+
+        // ══════════════════════════════
+        //  Submerged / Milk styles
+        // ══════════════════════════════
+        const modMenu = document.getElementById('modMenu');
+
+        function updateSubmergedStyles() {
+            const menuRect = modMenu.getBoundingClientRect();
+            const milkLineY = menuRect.top + (menuRect.height / 2);
+
+            document.querySelectorAll('.submerged-check').forEach(group => {
+                const r = group.getBoundingClientRect();
+                if (r.top > milkLineY - 10) {
+                    if (!group.classList.contains('submerged')) {
+                        group.classList.add('submerged');
+                        const s = group.querySelector('input[type=range]');
+                        if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d => d.id === s.id)?.suf || '%');
+                    }
+                } else {
+                    if (group.classList.contains('submerged')) {
+                        group.classList.remove('submerged');
+                        const s = group.querySelector('input[type=range]');
+                        if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d => d.id === s.id)?.suf || '%');
+                    }
+                }
+            });
+
+            document.querySelectorAll('.submerged-banner-title').forEach(title => {
+                const r = title.closest('.section-banner').getBoundingClientRect();
+                if (r.top > milkLineY - 30) title.classList.add('submerged-title');
+                else title.classList.remove('submerged-title');
+            });
+        }
+
+        document.querySelectorAll('.menu-content').forEach(mc => {
+            mc.addEventListener('scroll', updateSubmergedStyles);
         });
-    }
+        setTimeout(updateSubmergedStyles, 120);
 
-    document.querySelectorAll('.menu-content').forEach(mc => {
-        mc.addEventListener('scroll', updateSubmergedStyles);
-    });
-    setTimeout(updateSubmergedStyles, 120);
+        // ══════════════════════════════
+        //  Drag to move menu
+        // ══════════════════════════════
+        const menu = document.getElementById('modMenu');
+        const header = document.querySelector('.menu-header');
+        let dragging = false, startX, startY, menuX, menuY, initiated = false;
 
-    // ══════════════════════════════
-    //  Drag to move menu
-    // ══════════════════════════════
-    const menu = document.getElementById('modMenu');
-    const header = document.querySelector('.menu-header');
-    let dragging = false, startX, startY, menuX, menuY;
+        function initDragPosition() {
+            if (initiated) return;
+            initiated = true;
+            const r = menu.getBoundingClientRect();
+            menuX = r.left;
+            menuY = r.top;
+            menu.style.transform = 'none';
+            menu.style.left = menuX + 'px';
+            menu.style.top = menuY + 'px';
+        }
 
-    // Init position
-    menuX = window.innerWidth / 2 - menu.offsetWidth / 2;
-    menuY = window.innerHeight / 2 - menu.offsetHeight / 2;
-    menu.style.transform = 'none';
-    menu.style.left = menuX + 'px';
-    menu.style.top  = menuY + 'px';
+        function onDragStart(ex, ey) {
+            initDragPosition();
+            dragging = true;
+            startX = ex - menuX;
+            startY = ey - menuY;
+            menu.classList.add('dragging');
+        }
+        function onDragMove(ex, ey) {
+            if (!dragging) return;
+            menuX = ex - startX;
+            menuY = ey - startY;
+            menuX = Math.max(0, Math.min(window.innerWidth - menu.offsetWidth, menuX));
+            menuY = Math.max(0, Math.min(window.innerHeight - menu.offsetHeight, menuY));
+            menu.style.left = menuX + 'px';
+            menu.style.top = menuY + 'px';
+        }
+        function onDragEnd() {
+            dragging = false;
+            menu.classList.remove('dragging');
+        }
 
-    function onDragStart(ex, ey) {
-        dragging = true;
-        startX = ex - menuX;
-        startY = ey - menuY;
-        menu.classList.add('dragging');
-    }
-    function onDragMove(ex, ey) {
-        if (!dragging) return;
-        menuX = ex - startX;
-        menuY = ey - startY;
-        // Clamp within viewport
-        menuX = Math.max(0, Math.min(window.innerWidth - menu.offsetWidth, menuX));
-        menuY = Math.max(0, Math.min(window.innerHeight - menu.offsetHeight, menuY));
-        menu.style.left = menuX + 'px';
-        menu.style.top  = menuY + 'px';
-    }
-    function onDragEnd() {
-        dragging = false;
-        menu.classList.remove('dragging');
-    }
+        header.addEventListener('mousedown', e => { e.preventDefault(); onDragStart(e.clientX, e.clientY); });
+        document.addEventListener('mousemove', e => onDragMove(e.clientX, e.clientY));
+        document.addEventListener('mouseup', onDragEnd);
 
-    // Mouse
-    header.addEventListener('mousedown', e => { e.preventDefault(); onDragStart(e.clientX, e.clientY); });
-    document.addEventListener('mousemove', e => onDragMove(e.clientX, e.clientY));
-    document.addEventListener('mouseup', onDragEnd);
+        header.addEventListener('touchstart', e => { const t = e.touches[0]; onDragStart(t.clientX, t.clientY); }, { passive: true });
+        document.addEventListener('touchmove', e => { if (!dragging) return; e.preventDefault(); const t = e.touches[0]; onDragMove(t.clientX, t.clientY); }, { passive: false });
+        document.addEventListener('touchend', onDragEnd);
 
-    // Touch
-    header.addEventListener('touchstart', e => { const t=e.touches[0]; onDragStart(t.clientX, t.clientY); }, {passive:true});
-    document.addEventListener('touchmove', e => { const t=e.touches[0]; onDragMove(t.clientX, t.clientY); }, {passive:true});
-    document.addEventListener('touchend', onDragEnd);
+        // ══════════════════════════════════════════════════
+        //  THREE.JS — Milk layer only (transparent bg)
+        // ══════════════════════════════════════════════════
 
-    // ══════════════════════════════════════════════════
-    //  THREE.JS — Milk layer only (transparent bg)
-    // ══════════════════════════════════════════════════
+        // — Milk Layer
+        const milkContainer = document.getElementById('milkLayer');
+        const milkScene = new THREE.Scene();
+        const milkCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        milkCamera.position.z = 1;
+        const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        milkContainer.appendChild(milkRenderer.domElement);
+        function resizeMilk() { milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight); }
+        resizeMilk();
 
-    // — Milk Layer
-    const milkContainer = document.getElementById('milkLayer');
-    const milkScene = new THREE.Scene();
-    const milkCamera = new THREE.OrthographicCamera(-1,1,1,-1,0.1,10);
-    milkCamera.position.z = 1;
-    const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    milkContainer.appendChild(milkRenderer.domElement);
-    function resizeMilk() { milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight); }
-    resizeMilk();
-
-    const milkUniforms = { time: {value:0}, resolution: {value: new THREE.Vector2()} };
-    const milkMat = new THREE.ShaderMaterial({
-        uniforms: milkUniforms,
-        vertexShader: `
+        const milkUniforms = { time: { value: 0 }, resolution: { value: new THREE.Vector2() } };
+        const milkMat = new THREE.ShaderMaterial({
+            uniforms: milkUniforms,
+            vertexShader: `
             uniform float time;
             varying vec2 vUv;
             varying float vWave;
@@ -1096,7 +1338,7 @@
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
         `,
-        fragmentShader: `
+            fragmentShader: `
             uniform float time;
             varying vec2 vUv;
             varying float vWave;
@@ -1130,21 +1372,22 @@
                 gl_FragColor = vec4(clamp(base, 0.0, 1.0), 0.97);
             }
         `,
-        transparent: true
-    });
-    const milkMesh = new THREE.Mesh(new THREE.PlaneGeometry(3,2,64,32), milkMat);
-    milkMesh.position.y = -1.0;
-    milkScene.add(milkMesh);
+            transparent: true
+        });
+        const milkMesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 2, 64, 32), milkMat);
+        milkMesh.position.y = -1.0;
+        milkScene.add(milkMesh);
 
-    window.addEventListener('resize', resizeMilk);
+        window.addEventListener('resize', resizeMilk);
 
-    // ── Render loop ──
-    function animate() {
-        requestAnimationFrame(animate);
-        milkUniforms.time.value += 0.015;
-        milkRenderer.render(milkScene, milkCamera);
-    }
-    animate();
+        // ── Render loop ──
+        function animate() {
+            requestAnimationFrame(animate);
+            milkUniforms.time.value += 0.015;
+            milkRenderer.render(milkScene, milkCamera);
+        }
+        animate();
     </script>
 </body>
+
 </html>
