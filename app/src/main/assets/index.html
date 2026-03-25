@@ -1042,12 +1042,16 @@
         function toggleMenu() {
             const menu = document.getElementById('modMenu');
             const icon = document.getElementById('reopenIcon');
-            if (menu.style.display === 'none') {
+            const isOpening = menu.style.display === 'none';
+            if (isOpening) {
                 menu.style.display = 'flex';
                 icon.style.display = 'none';
             } else {
                 menu.style.display = 'none';
                 icon.style.display = 'block';
+            }
+            if (typeof Android !== 'undefined' && Android.setMenuState) {
+                Android.setMenuState(isOpening);
             }
         }
 

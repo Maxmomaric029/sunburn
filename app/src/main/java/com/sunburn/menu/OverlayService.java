@@ -21,6 +21,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.net.Uri;
 import android.widget.Toast;
+import android.webkit.JavascriptInterface;
 import androidx.core.app.NotificationCompat;
 
 public class OverlayService extends Service {
@@ -76,6 +77,7 @@ public class OverlayService extends Service {
         settings.setAllowContentAccess(true);
         
         webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.addJavascriptInterface(new OverlayInterface(), "Android");
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -111,6 +113,26 @@ public class OverlayService extends Service {
             }
         });
         webView.loadUrl("file:///android_asset/index.html");
+    }
+
+    private class OverlayInterface {
+        @JavascriptInterface
+        public void setMenuState(boolean isOpen) {
+            webView.post(() -> {
+                if (isOpen) {
+                    params.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    params.height = WindowManager.LayoutParams.MATCH_PARENT;
+                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+                } else {
+                    // Small size for the "S" icon region (e.g., 80x80 dp)
+                    int size = (int) (80 * getResources().getDisplayMetrics().density);
+                    params.width = size;
+                    params.height = size;
+                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+                }
+                windowManager.updateViewLayout(overlayView, params);
+            });
+        }
     }
 
     private void createNotificationChannel() {
