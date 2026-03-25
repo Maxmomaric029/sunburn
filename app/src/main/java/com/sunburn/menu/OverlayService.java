@@ -22,6 +22,9 @@ import android.webkit.WebViewClient;
 import android.net.Uri;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
+import android.graphics.Region;
+import android.graphics.Rect;
+import android.view.ViewTreeObserver;
 import androidx.core.app.NotificationCompat;
 
 public class OverlayService extends Service {
@@ -78,6 +81,19 @@ public class OverlayService extends Service {
         
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.addJavascriptInterface(new OverlayInterface(), "Android");
+        
+        // Listen for internal insets to define touchable region
+        webView.getViewTreeObserver().addOnComputeInternalInsetsListener(insets -> {
+            insets.contentInsets.setEmpty();
+            insets.visibleInsets.setEmpty();
+            if (mTouchableRegion != null) {
+                insets.touchableRegion.set(mTouchableRegion);
+                insets.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_REGION);
+            } else {
+                insets.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME);
+            }
+        });
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -115,22 +131,40 @@ public class OverlayService extends Service {
         webView.loadUrl("file:///android_asset/index.html");
     }
 
+    private Region mTouchableRegion = null;
+
     private class OverlayInterface {
         @JavascriptInterface
         public void setMenuState(boolean isOpen) {
+            // This is now legacy or can be used for other things
+        }
+
+        @JavascriptInterface
+        public void setTouchableRect(int x, int y, int width, int height) {
             webView.post(() -> {
-                if (isOpen) {
+                // Ensure the view is fully covering the screen so coordinates match
+                if (params.width != WindowManager.LayoutParams.MATCH_PARENT || params.height != WindowManager.LayoutParams.MATCH_PARENT) {
                     params.width = WindowManager.LayoutParams.MATCH_PARENT;
                     params.height = WindowManager.LayoutParams.MATCH_PARENT;
-                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-                } else {
-                    // Small size for the "S" icon region (e.g., 80x80 dp)
-                    int size = (int) (80 * getResources().getDisplayMetrics().density);
-                    params.width = size;
-                    params.height = size;
-                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+                    windowManager.updateViewLayout(overlayView, params);
                 }
-                windowManager.updateViewLayout(overlayView, params);
+                
+                float density = getResources().getDisplayMetrics().density;
+                int left = (int) (x * density);
+                int top = (int) (y * density);
+                int right = (int) ((x + width) * density);
+                int bottom = (int) ((y + height) * density);
+                
+                mTouchableRegion = new Region(left, top, right, bottom);
+                webView.requestLayout(); // Trigger insets computation
+            });
+        }
+
+        @JavascriptInterface
+        public void clearTouchableRect() {
+            webView.post(() -> {
+                mTouchableRegion = null;
+                webView.requestLayout();
             });
         }
     }

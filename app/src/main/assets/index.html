@@ -1050,8 +1050,19 @@
                 menu.style.display = 'none';
                 icon.style.display = 'block';
             }
-            if (typeof Android !== 'undefined' && Android.setMenuState) {
-                Android.setMenuState(isOpening);
+            syncTouchableRegion();
+        }
+
+        function syncTouchableRegion() {
+            if (typeof Android === 'undefined' || !Android.setTouchableRect) return;
+            const menu = document.getElementById('modMenu');
+            const icon = document.getElementById('reopenIcon');
+            let target = (menu.style.display !== 'none') ? menu : icon;
+            if (target && target.style.display !== 'none') {
+                const r = target.getBoundingClientRect();
+                Android.setTouchableRect(Math.floor(r.left), Math.floor(r.top), Math.ceil(r.width), Math.ceil(r.height));
+            } else {
+                Android.clearTouchableRect();
             }
         }
 
@@ -1126,6 +1137,7 @@
             menuY = Math.max(0, Math.min(window.innerHeight - menu.offsetHeight, menuY));
             menu.style.left = menuX + 'px';
             menu.style.top = menuY + 'px';
+            syncTouchableRegion();
         }
         function onDragEnd() {
             dragging = false;
@@ -1223,6 +1235,7 @@
             milkRenderer.render(milkScene, milkCamera);
         }
         animate();
+        setTimeout(syncTouchableRegion, 500);
     </script>
 </body>
 
