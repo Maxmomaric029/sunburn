@@ -14,9 +14,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.net.Uri;
 import android.widget.Toast;
-import android.webkit.WebResourceRequest;
 import androidx.core.app.NotificationCompat;
 
 public class OverlayService extends Service {
