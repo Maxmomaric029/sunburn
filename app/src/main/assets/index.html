@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>SUNBURN 3D Fixed Menu</title>
+    <title>SUNBURN Overlay</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
+
+        :root {
+            --glass-bg: rgba(8, 8, 12, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --milk-color: rgba(245, 245, 255, 0.95);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --accent: #c8d8ff;
+            --accent2: #8ab4ff;
+            --glow: rgba(180, 210, 255, 0.3);
+        }
 
         * {
             box-sizing: border-box;
@@ -14,7 +25,6 @@
             -webkit-user-select: none;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
         }
 
         body {
@@ -22,40 +32,39 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
+            font-family: 'Rajdhani', sans-serif;
         }
 
+        /* ── Canvas BG ── */
         #canvas-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1; 
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
         }
 
+        /* ── FOV Circle ── */
         #fovCircle {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            border: 2px solid #ffffff;
+            border: 1.5px solid rgba(255,255,255,0.7);
             border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255,255,255,0.5), inset 0 0 10px rgba(255,255,255,0.3);
+            box-shadow: 0 0 14px rgba(200,216,255,0.25);
             pointer-events: none;
             display: none;
             z-index: 9999;
-            transition: width 0.1s, height 0.1s;
+            transition: width 0.12s ease, height 0.12s ease;
         }
 
+        /* ── Modal ── */
         #mySensiModal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 100000;
             display: none;
             justify-content: center;
@@ -63,12 +72,12 @@
         }
 
         .modal-box {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 40px 30px;
+            background: rgba(12, 12, 18, 0.95);
+            border: 1px solid rgba(255, 77, 28, 0.3);
+            border-radius: 16px;
+            padding: 40px 36px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(200,216,255,0.15), 0 20px 60px rgba(0,0,0,0.9);
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
         }
@@ -79,254 +88,326 @@
         }
 
         .modal-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 26px;
             color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
             line-height: 1.4;
         }
-        
+
         #sensiNameDisplay {
             display: block;
-            font-size: 32px;
+            font-size: 34px;
             margin-top: 10px;
             transition: color 0.3s, text-shadow 0.3s;
         }
 
         .modal-btn {
-            background: #fff;
-            color: #000;
+            background: var(--accent);
+            color: #fff;
             border: none;
-            padding: 10px 30px;
-            font-size: 16px;
-            font-weight: 800;
-            border-radius: 10px;
+            padding: 10px 32px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+            border-radius: 8px;
             cursor: pointer;
-            text-transform: uppercase;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 20px var(--glow);
         }
 
         .modal-btn:active { transform: scale(0.95); }
-        .modal-btn:hover { box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        .modal-btn:hover { box-shadow: 0 0 28px var(--glow); }
 
-        :root {
-            --glass-bg: rgba(15, 15, 15, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --milk-color: rgba(245, 245, 255, 0.95);
-            --text-main: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.5);
-            --accent: #ffffff;
-        }
-
+        /* ── Main Menu ── */
         .mod-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            width: 380px;
-            height: 85vh;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 370px;
+            height: 86vh;
             background: var(--glass-bg);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.04);
             display: flex;
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
+            animation: menuSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+            touch-action: none;
         }
 
+        @keyframes menuSlideIn {
+            0% { opacity: 0; transform: translate(-50%, -44%) scale(0.96); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .mod-menu.dragging { box-shadow: 0 40px 90px rgba(0,0,0,0.99); }
+
+        /* ── Header ── */
         .menu-header {
-            padding: 18px 20px;
-            background: rgba(0, 0, 0, 0.4);
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.5);
             border-bottom: 1px solid var(--glass-border);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            cursor: default; 
+            gap: 12px;
             position: relative;
             z-index: 10;
+            flex-shrink: 0;
+            cursor: grab;
+        }
+        .menu-header:active { cursor: grabbing; }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255,77,28,0.4);
+            box-shadow: 0 0 12px rgba(200,216,255,0.18);
+            flex-shrink: 0;
+        }
+
+        .header-logo-placeholder {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: 1px solid rgba(255,77,28,0.5);
+            box-shadow: 0 0 14px rgba(255,77,28,0.4);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .header-text {
+            flex: 1;
         }
 
         .menu-title {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 28px;
-            letter-spacing: 5px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: 400;
+            font-size: 26px;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            color: var(--milk-color); 
-            -webkit-text-stroke: 2px #000000;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
-            margin: 0;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,77,28,0.6), 0 2px 8px rgba(0,0,0,0.9);
+            line-height: 1;
+            display: block;
+        }
+
+        .menu-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-top: 2px;
+            display: block;
         }
 
         .close-btn {
-            color: var(--text-main);
-            font-family: 'Oswald', sans-serif;
-            font-size: 20px;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
             cursor: pointer;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transition: transform 0.2s;
+            transition: color 0.2s, transform 0.2s;
+            padding: 4px;
+        }
+        .close-btn:hover { color: #fff; transform: rotate(90deg); }
+
+        /* ── Tabs ── */
+        .tab-bar {
+            display: flex;
+            background: rgba(0,0,0,0.35);
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 5;
         }
 
-        .close-btn:hover { transform: scale(1.1); }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 15px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-align: center;
+            transition: color 0.2s;
+            position: relative;
+        }
 
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 20%; right: 20%;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px 2px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 8px var(--glow);
+        }
+
+        .tab-btn.active { color: #fff; }
+        .tab-btn.active::after { transform: scaleX(1); }
+
+        /* ── Tab Panels ── */
+        .tab-panel {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .tab-panel.active { display: flex; }
+
+        /* ── Milk Layer ── */
         .milk-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 1;
             pointer-events: none;
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
         }
 
+        /* ── Menu Content ── */
         .menu-content {
             padding: 0;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+            scrollbar-color: rgba(200,216,255,0.18) transparent;
             position: relative;
             z-index: 2;
             height: 100%;
+            flex: 1;
         }
 
-        .menu-content::-webkit-scrollbar { width: 4px; }
+        .menu-content::-webkit-scrollbar { width: 3px; }
         .menu-content::-webkit-scrollbar-track { background: transparent; }
-        .menu-content::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .menu-content::-webkit-scrollbar-thumb { background-color: rgba(200,216,255,0.18); border-radius: 10px; }
 
-        .content-inner { padding-bottom: 20px; }
+        .content-inner { padding: 18px 18px 28px; }
 
-        /* Estilos sumergidos */
-        .submerged, .submerged .control-header span, .submerged .control-value {
-            color: #111111 !important;
-            text-shadow: none !important;
-            font-weight: 800;
-            transition: color 0.2s;
-        }
-        .submerged input[type=range]::-webkit-slider-thumb { background: #111111 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important; }
-        .submerged .target-btn { border-color: rgba(0,0,0,0.3) !important; color: #111 !important; }
-        .submerged .target-btn.active { background: #111 !important; color: #fff !important; }
-        .submerged .action-btn { background: #111 !important; color: #fff !important; border-color: #111 !important; }
-        
-        /* Switches sumergidos */
-        .submerged .switch-track { background: rgba(0,0,0,0.15) !important; border-color: rgba(0,0,0,0.3) !important; }
-        .submerged .switch-thumb { background: #111 !important; }
-        .submerged input[type="checkbox"]:checked + .switch-track { background: #111 !important; border-color: #111 !important; }
-        .submerged input[type="checkbox"]:checked + .switch-track .switch-thumb { background: #fff !important; }
-
-        .section {
-            padding: 20px 20px 5px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        .section:last-child { border-bottom: none; }
-
+        /* ── Section Banner ── */
         .section-banner {
             width: 100%;
-            height: 80px;
+            height: 72px;
             background-size: cover;
             background-position: center;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(200,216,255,0.12);
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-end;
+            justify-content: flex-start;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, filter 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
             cursor: crosshair;
         }
 
-        .section-banner:hover {
-            transform: scale(1.04);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            filter: brightness(1.1);
-            z-index: 5;
+        .section-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
         }
+
+        .section-banner:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
 
         .section-title {
             color: #fff;
-            font-size: 14px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 6px 16px;
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            letter-spacing: 3px;
+            padding: 8px 12px;
             position: relative;
             z-index: 1;
+        }
+
+        /* ── Control Groups ── */
+        .control-group {
+            margin-bottom: 22px;
             transition: all 0.2s;
+            animation: fadeSlideUp 0.4s ease both;
         }
 
-        .submerged-title {
-            background: rgba(255, 255, 255, 0.9) !important;
-            color: #000 !important;
-            text-shadow: none !important;
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        .control-group { margin-bottom: 25px; transition: all 0.2s; }
-        .control-group.small-margin { margin-bottom: 15px; }
+        .control-group:nth-child(1) { animation-delay: 0.05s; }
+        .control-group:nth-child(2) { animation-delay: 0.10s; }
+        .control-group:nth-child(3) { animation-delay: 0.15s; }
+        .control-group:nth-child(4) { animation-delay: 0.20s; }
+        .control-group:nth-child(5) { animation-delay: 0.25s; }
+        .control-group:nth-child(6) { animation-delay: 0.30s; }
 
         .control-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
         .control-value {
-            color: var(--text-muted);
-            font-weight: 600;
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        /* Switches Custom CSS */
-        .switch-container {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
+        /* ── Switches ── */
+        .switch-container { display: inline-flex; align-items: center; cursor: pointer; }
         .switch-track {
-            width: 38px;
-            height: 20px;
-            background: rgba(255,255,255,0.15);
+            width: 38px; height: 20px;
+            background: rgba(255,255,255,0.1);
             border-radius: 12px;
             position: relative;
             transition: background 0.3s, border-color 0.3s;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
         }
         .switch-thumb {
-            width: 14px;
-            height: 14px;
-            background: #fff;
+            width: 14px; height: 14px;
+            background: rgba(255,255,255,0.5);
             border-radius: 50%;
             position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
+            top: 2px; left: 2px;
+            transition: transform 0.3s, background 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .switch-container input[type="checkbox"] { display: none; }
         .switch-container input[type="checkbox"]:checked + .switch-track {
-            background: #fff;
-            border-color: #fff;
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--glow);
         }
         .switch-container input[type="checkbox"]:checked + .switch-track .switch-thumb {
             transform: translateX(18px);
-            background: #000;
+            background: #fff;
         }
 
-        /* Sliders */
+        /* ── Sliders ── */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -338,89 +419,235 @@
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 6px;
+            height: 4px;
             cursor: pointer;
-            background: linear-gradient(to right, var(--fill-c, #ffffff) var(--perc, 0%), var(--empty-c, rgba(255,255,255,0.15)) var(--perc, 0%));
+            background: linear-gradient(to right, var(--fill-c, var(--accent)) var(--perc, 0%), var(--empty-c, rgba(255,255,255,0.1)) var(--perc, 0%));
             border-radius: 10px;
         }
         input[type=range]::-webkit-slider-thumb {
-            height: 16px;
-            width: 16px;
+            height: 14px; width: 14px;
             border-radius: 50%;
-            background: var(--accent);
+            background: #fff;
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            transition: transform 0.1s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 6px var(--glow);
+            transition: transform 0.1s, box-shadow 0.1s;
         }
-        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.3); }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.4);
+            box-shadow: 0 0 14px var(--glow);
+        }
 
+        /* ── Target Selector ── */
         .target-selector {
             display: flex;
             gap: 5px;
-            background: rgba(0,0,0,0.2);
-            padding: 5px;
-            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 8px;
             border: 1px solid var(--glass-border);
         }
+
         .target-btn {
             flex: 1;
             text-align: center;
-            padding: 8px 0;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
+            padding: 7px 0;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 13px;
+            letter-spacing: 1.5px;
             color: var(--text-muted);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 5px;
             transition: all 0.2s;
         }
-        .target-btn.active { background: var(--accent); color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.2); }
+        .target-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 12px var(--glow);
+        }
 
+        /* ── Action Button ── */
         .action-btn {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 10px;
+            border: 1px solid rgba(200,216,255,0.2);
+            color: var(--accent);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            letter-spacing: 2px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            margin-top: 10px;
+            margin-top: 8px;
         }
-        .action-btn:hover { background: rgba(255,255,255,0.1); }
+        .action-btn:hover {
+            background: rgba(200,216,255,0.08);
+            box-shadow: 0 0 16px rgba(200,216,255,0.12);
+        }
         .action-btn:active { transform: scale(0.98); }
 
+        /* ── Divider ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(200,216,255,0.15), transparent);
+            margin: 6px 0 22px;
+        }
+
+        /* ── Submerged styles ── */
+        .submerged .control-header span,
+        .submerged .control-value { color: #111 !important; text-shadow: none !important; }
+        .submerged .control-value { color: #333 !important; }
+        .submerged input[type=range]::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #222 var(--perc,0%), rgba(0,0,0,0.12) var(--perc,0%)) !important;
+        }
+        .submerged input[type=range]::-webkit-slider-thumb {
+            background: #111 !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
+        }
+        .submerged .target-btn { color: #333 !important; }
+        .submerged .target-btn.active { background: #111 !important; color: #fff !important; box-shadow: none !important; }
+        .submerged .action-btn { border-color: rgba(0,0,0,0.25) !important; color: #111 !important; }
+        .submerged .action-btn:hover { background: rgba(0,0,0,0.08) !important; }
+        .submerged .switch-track { background: rgba(0,0,0,0.12) !important; border-color: rgba(0,0,0,0.2) !important; }
+        .submerged .switch-thumb { background: #555 !important; }
+        .submerged input[type="checkbox"]:checked + .switch-track { background: #111 !important; border-color: #111 !important; box-shadow: none !important; }
+        .submerged input[type="checkbox"]:checked + .switch-track .switch-thumb { background: #fff !important; }
+
+        .submerged-title {
+            background: rgba(255,255,255,0.92) !important;
+            color: #000 !important;
+            text-shadow: none !important;
+        }
+
+        /* ── WhatsApp Gate ── */
+        #waGate {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .wa-box {
+            background: rgba(10,10,14,0.97);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 44px 36px;
+            text-align: center;
+            max-width: 88%;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+        }
+        .wa-logo {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 0 auto 18px;
+            display: block;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .wa-logo-fb {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            background: linear-gradient(135deg,#fff,#ccc);
+            margin: 0 auto 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 22px; color: #000;
+        }
+        .wa-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 5px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .wa-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 2px;
+            margin-bottom: 28px;
+        }
+        .wa-desc {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .wa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25d366;
+            color: #fff;
+            border: none;
+            padding: 13px 28px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 24px rgba(37,211,102,0.3);
+        }
+        .wa-btn:hover { transform: scale(1.03); box-shadow: 0 0 32px rgba(37,211,102,0.45); }
+        .wa-btn:active { transform: scale(0.97); }
+        .wa-btn svg { width:20px; height:20px; fill:#fff; flex-shrink:0; }
+        .wa-enter {
+            display: block;
+            margin-top: 18px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: rgba(255,255,255,0.2);
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        .wa-enter:hover { color: rgba(255,255,255,0.45); }
+
+        /* ── Reopen Icon ── */
         #reopenIcon {
             display: none;
             position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 45px;
-            height: 45px;
+            top: 18px; left: 18px;
+            width: 44px; height: 44px;
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border: 1px solid rgba(200,216,255,0.18);
+            border-radius: 10px;
             color: var(--text-main);
-            font-weight: 800;
+            font-family: 'Bebas Neue', sans-serif;
             text-align: center;
-            line-height: 43px;
-            font-size: 20px;
+            line-height: 42px;
+            font-size: 18px;
+            letter-spacing: 1px;
             cursor: pointer;
             z-index: 10000;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 14px rgba(200,216,255,0.15);
+            animation: fadeIn 0.3s ease;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+
     </style>
 </head>
 <body>
 
     <div id="fovCircle"></div>
 
+    <!-- Modal -->
     <div id="mySensiModal">
         <div class="modal-box">
             <h2 class="modal-title">Sensi <span id="sensiNameDisplay"></span>?</h2>
@@ -428,29 +655,88 @@
         </div>
     </div>
 
-    <div id="canvas-container"></div>
+    <!-- 3D Background — transparent so app behind is visible -->
+    <div id="canvas-container" style="pointer-events:none;"></div>
 
+    <!-- WhatsApp Gate -->
+    <div id="waGate" style="
+        position:fixed;inset:0;
+        background:rgba(0,0,0,0.92);
+        backdrop-filter:blur(12px);
+        -webkit-backdrop-filter:blur(12px);
+        z-index:999999;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    ">
+        <div style="
+            background:rgba(12,12,18,0.97);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:18px;
+            padding:40px 32px;
+            text-align:center;
+            max-width:88%;
+            box-shadow:0 20px 60px rgba(0,0,0,0.95);
+            animation: popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) both;
+        ">
+            <div style="font-size:44px;margin-bottom:16px;">💬</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:#fff;margin-bottom:8px;">ACCESO REQUERIDO</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:28px;line-height:1.6;">
+                Para usar SUNBURN debes<br>unirte al grupo de WhatsApp
+            </div>
+            <a href="https://chat.whatsapp.com/BEspMtKkGOsBWM5y36ZhqI" target="_blank"
+               onclick="setTimeout(()=>{ document.getElementById('waGate').style.display='none'; },1500)"
+               style="
+                display:inline-block;
+                background:#25D366;
+                color:#fff;
+                font-family:'Bebas Neue',sans-serif;
+                font-size:18px;
+                letter-spacing:2px;
+                padding:12px 32px;
+                border-radius:10px;
+                text-decoration:none;
+                box-shadow:0 0 20px rgba(37,211,102,0.3);
+                transition:box-shadow 0.2s;
+            ">Unirse al Grupo</a>
+            <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:2px;">By 9B BLOODIE</div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
     <div class="mod-menu" id="modMenu">
-        <div class="menu-header" id="menuHeader">
-            <h1 class="menu-title">SUNBURN</h1>
+
+        <!-- Header -->
+        <div class="menu-header">
+            <img src="LOGO.jpeg" class="header-logo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';" alt="Logo">
+            <div class="header-logo-placeholder" id="logoFallback" style="display:none;">S</div>
+            <div class="header-text">
+                <span class="menu-title">SUNBURN</span>
+                <span class="menu-subtitle">By 9B BLOODIE</span>
+            </div>
             <div class="close-btn" onclick="toggleMenu()">✕</div>
         </div>
 
+        <!-- Tabs -->
+        <div class="tab-bar">
+            <div class="tab-btn active" onclick="switchTab(this,'combat')">Combat</div>
+            <div class="tab-btn" onclick="switchTab(this,'blood')">Blood</div>
+            <div class="tab-btn" onclick="switchTab(this,'config')">Config</div>
+        </div>
+
+        <!-- Milk Layer -->
         <div class="milk-layer" id="milkLayer"></div>
 
-        <div class="menu-content" id="menuContent">
-            <div class="content-inner" id="contentInner">
-                
-                <div class="section" id="sec-combat">
+        <!-- ══ Tab: Combat ══ -->
+        <div class="tab-panel active" id="tab-combat">
+            <div class="menu-content" id="menuContent-combat">
+                <div class="content-inner">
                     <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/d0/1a/5d/d01a5d62d2a2e90e3a96fdbba7113dce.gif');">
-                        <div class="section-title" id="title-combat">Combat</div>
+                        <div class="section-title submerged-banner-title" id="title-combat">⚔ Combat</div>
                     </div>
-                    
-                    <div class="control-group submerged-check small-margin">
-                        <div class="control-header">
-                            <span>Aimlock FOV</span>
-                            <span class="control-value" id="val-fov">0°</span>
-                        </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header"><span>Aimlock FOV</span><span class="control-value" id="val-fov">0°</span></div>
                         <input type="range" id="fov" min="0" max="360" value="0" oninput="updateFOV(this.value)">
                     </div>
 
@@ -462,90 +748,77 @@
                         </div>
                     </div>
 
+                    <div class="divider"></div>
+
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>HS Rate</span>
-                            <span class="control-value" id="val-hs">0%</span>
-                        </div>
-                        <input type="range" id="hs" min="0" max="100" value="0" oninput="updateSlider('hs', 'val-hs', '%')">
+                        <div class="control-header"><span>HS Rate</span><span class="control-value" id="val-hs">0%</span></div>
+                        <input type="range" id="hs" min="0" max="100" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>No Recoil</span>
-                            <span class="control-value" id="val-recoil">0%</span>
-                        </div>
-                        <input type="range" id="recoil" min="0" max="100" value="0" oninput="updateSlider('recoil', 'val-recoil', '%')">
+                        <div class="control-header"><span>No Recoil</span><span class="control-value" id="val-recoil">0%</span></div>
+                        <input type="range" id="recoil" min="0" max="100" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>Easy Head</span>
-                            <span class="control-value" id="val-easyhead">0%</span>
-                        </div>
-                        <input type="range" id="easyhead" min="0" max="100" value="0" oninput="updateSlider('easyhead', 'val-easyhead', '%')">
+                        <div class="control-header"><span>Easy Head</span><span class="control-value" id="val-easyhead">0%</span></div>
+                        <input type="range" id="easyhead" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header"><span>Aimbot — Rage</span><span class="control-value" id="val-aim_rage">OFF</span></div>
+                        <input type="range" id="aim_rage" min="0" max="1" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>Aimbot - rage</span>
-                            <span class="control-value" id="val-aim_rage">OFF</span>
-                        </div>
-                        <input type="range" id="aim_rage" min="0" max="1" value="0" oninput="updateSlider('aim_rage', 'val-aim_rage', '')">
+                        <div class="control-header"><span>SemiAimbot — AWP</span><span class="control-value" id="val-aim_awp">OFF</span></div>
+                        <input type="range" id="aim_awp" min="0" max="1" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>SemiAimbot - Awp</span>
-                            <span class="control-value" id="val-aim_awp">OFF</span>
-                        </div>
-                        <input type="range" id="aim_awp" min="0" max="1" value="0" oninput="updateSlider('aim_awp', 'val-aim_awp', '')">
+                        <div class="control-header"><span>Fully Aimbot — Script</span><span class="control-value" id="val-aim_script">OFF</span></div>
+                        <input type="range" id="aim_script" min="0" max="1" value="0">
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>Fully Aimbot - script</span>
-                            <span class="control-value" id="val-aim_script">OFF</span>
-                        </div>
-                        <input type="range" id="aim_script" min="0" max="1" value="0" oninput="updateSlider('aim_script', 'val-aim_script', '')">
-                    </div>
-
-                    <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>Aimbot - m1018</span>
-                            <span class="control-value" id="val-aim_m1018">OFF</span>
-                        </div>
-                        <input type="range" id="aim_m1018" min="0" max="1" value="0" oninput="updateSlider('aim_m1018', 'val-aim_m1018', '')">
+                        <div class="control-header"><span>Aimbot — M1018</span><span class="control-value" id="val-aim_m1018">OFF</span></div>
+                        <input type="range" id="aim_m1018" min="0" max="1" value="0">
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="section" id="sec-blood">
+        <!-- ══ Tab: Blood ══ -->
+        <div class="tab-panel" id="tab-blood">
+            <div class="menu-content" id="menuContent-blood">
+                <div class="content-inner">
                     <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/b8/6f/e5/b86fe51d6dbf77b7b698b13ae3c56335.gif');">
-                        <div class="section-title" id="title-blood">Blood</div>
-                    </div>
-                    
-                    <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>👺 𝐑𝐞𝐠𝐞𝐝𝐢𝐭 𝐅𝐮𝐥𝐥 𝐕𝐞𝐫𝐦𝐞𝐥𝐡𝐨</span>
-                            <span class="control-value" id="val-regedit">0%</span>
-                        </div>
-                        <input type="range" id="regedit" min="0" max="100" value="0" oninput="updateSlider('regedit', 'val-regedit', '%')">
+                        <div class="section-title submerged-banner-title" id="title-blood">🩸 Blood</div>
                     </div>
 
                     <div class="control-group submerged-check">
-                        <div class="control-header">
-                            <span>💀 𝐀𝐮𝐱𝐢𝐥𝐢𝐨 𝐆𝐫𝐮𝐝𝐚 [𝐕𝐈𝐏]</span>
-                            <span class="control-value" id="val-gruda">0%</span>
-                        </div>
-                        <input type="range" id="gruda" min="0" max="100" value="0" oninput="updateSlider('gruda', 'val-gruda', '%')">
+                        <div class="control-header"><span>👺 Regedit Full Vermelho</span><span class="control-value" id="val-regedit">0%</span></div>
+                        <input type="range" id="regedit" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header"><span>💀 Auxilio Gruda [VIP]</span><span class="control-value" id="val-gruda">0%</span></div>
+                        <input type="range" id="gruda" min="0" max="100" value="0">
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="section" id="sec-config">
+        <!-- ══ Tab: Config ══ -->
+        <div class="tab-panel" id="tab-config">
+            <div class="menu-content" id="menuContent-config">
+                <div class="content-inner">
                     <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/09/fa/e4/09fae4879b5c83ac5620f3e0b75156fb.gif');">
-                        <div class="section-title" id="title-config">Config</div>
+                        <div class="section-title submerged-banner-title" id="title-config">⚙ Config</div>
                     </div>
-                    
+
                     <div class="control-group submerged-check">
                         <div class="control-header">
                             <span>Sensi Bloodz</span>
@@ -566,288 +839,312 @@
                         </div>
                     </div>
 
+                    <div class="divider"></div>
+
                     <div class="control-group submerged-check">
                         <button class="action-btn" onclick="openModal()">My Sensi</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+    </div><!-- end mod-menu -->
 
     <div id="reopenIcon" onclick="toggleMenu()">S</div>
 
     <script>
-        let fovTimeout;
-        const fovCircle = document.getElementById('fovCircle');
-        
-        function updateFOV(val) {
-            updateSlider('fov', 'val-fov', '°');
-            fovCircle.style.display = 'block';
-            const size = val * 1.5; 
-            fovCircle.style.width = size + 'px';
-            fovCircle.style.height = size + 'px';
-            
-            clearTimeout(fovTimeout);
-            fovTimeout = setTimeout(() => {
-                fovCircle.style.display = 'none';
-            }, 800);
+    // ══════════════════════════════
+    //  Tabs
+    // ══════════════════════════════
+    function switchTab(btn, id) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + id).classList.add('active');
+        // Re-trigger animations
+        document.querySelectorAll('#tab-' + id + ' .control-group').forEach((el, i) => {
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+            el.style.animationDelay = (0.04 * i) + 's';
+        });
+        setTimeout(() => updateSubmergedStyles(), 50);
+    }
+
+    // ══════════════════════════════
+    //  FOV Circle
+    // ══════════════════════════════
+    let fovTimeout;
+    const fovCircle = document.getElementById('fovCircle');
+
+    function updateFOV(val) {
+        updateSlider('fov', 'val-fov', '°');
+        fovCircle.style.display = 'block';
+        const size = val * 1.5;
+        fovCircle.style.width = size + 'px';
+        fovCircle.style.height = size + 'px';
+        clearTimeout(fovTimeout);
+        fovTimeout = setTimeout(() => { fovCircle.style.display = 'none'; }, 900);
+    }
+
+    function setTarget(el) {
+        for (let s of el.parentElement.children) s.classList.remove('active');
+        el.classList.add('active');
+    }
+
+    // ══════════════════════════════
+    //  Sensi Modal
+    // ══════════════════════════════
+    const sensiList = [
+        "Strongest Sorcerer","Ninja Slayer","King of Heroes","Throne Remnant",
+        "Ancient Shard","Golden Essence","King of Heroes Armor","Phantasm Core",
+        "Manipulator","Solo Hunter","Gryphon","Excalibur","Dark Blade","Katana",
+        "Blessed Maiden","Tempest Relic","Corrupted Knight","Dark Grail",
+        "Curse King","Light","Blood","D"
+    ];
+    const sensiColors = [
+        '#ff3b30','#ff9500','#34c759','#00c7be','#32ade6',
+        '#007aff','#5856d6','#af52de','#ff2d55','#ff8a65','#39ff14'
+    ];
+
+    function openModal() {
+        const nd = document.getElementById('sensiNameDisplay');
+        const name = sensiList[Math.floor(Math.random() * sensiList.length)];
+        const color = sensiColors[Math.floor(Math.random() * sensiColors.length)];
+        nd.innerText = name;
+        nd.style.color = color;
+        nd.style.textShadow = `0 0 15px ${color}, 0 0 30px ${color}`;
+        document.getElementById('mySensiModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('mySensiModal').style.display = 'none';
+    }
+
+    // ══════════════════════════════
+    //  Sliders
+    // ══════════════════════════════
+    function updateSlider(id, valId, suffix) {
+        const slider = document.getElementById(id);
+        const text = document.getElementById(valId);
+        if (!slider || !text) return;
+        if (slider.max === "1") {
+            text.innerText = slider.value === "1" ? "ON" : "OFF";
+        } else {
+            text.innerText = slider.value + suffix;
         }
+        const min = slider.min || 0;
+        const max = slider.max || 100;
+        const pct = ((slider.value - min) / (max - min)) * 100;
+        const isSubmerged = slider.closest('.control-group').classList.contains('submerged');
+        slider.style.setProperty('--perc', pct + '%');
+        slider.style.setProperty('--fill-c', isSubmerged ? '#222' : 'var(--accent)');
+        slider.style.setProperty('--empty-c', isSubmerged ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.1)');
+    }
 
-        function setTarget(el) {
-            const siblings = el.parentElement.children;
-            for(let s of siblings) s.classList.remove('active');
-            el.classList.add('active');
+    const sliderDefs = [
+        {id:'fov',   suf:'°'},
+        {id:'hs',    suf:'%'},
+        {id:'recoil',suf:'%'},
+        {id:'easyhead',suf:'%'},
+        {id:'aim_rage',suf:''},
+        {id:'aim_awp',suf:''},
+        {id:'aim_script',suf:''},
+        {id:'aim_m1018',suf:''},
+        {id:'regedit',suf:'%'},
+        {id:'gruda', suf:'%'},
+    ];
+
+    sliderDefs.forEach(({id, suf}) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = 0;
+        updateSlider(id, 'val-' + id, suf);
+        if (id !== 'fov') {
+            el.addEventListener('input', () => updateSlider(id, 'val-' + id, suf));
         }
+    });
 
-        const sensiList = [
-            "Strongest Sorcerer", "Ninja Slayer", "King of Heroes", 
-            "Throne Remnant", "Ancient Shard", "Golden Essence", "King of Heroes Armor", 
-            "Phantasm Core", "Manipulator", "Solo Hunter", "Gryphon", "Excalibur", 
-            "Dark Blade", "Katana", "Blessed Maiden", "Tempest Relic", "Corrupted Knight", 
-            "Dark Grail", "Curse King", "Light", "Blood", "D"
-        ];
-        
-        const sensiColors = [
-            '#ff3b30', '#ff9500', '#34c759', '#00c7be', '#32ade6', 
-            '#007aff', '#5856d6', '#af52de', '#ff2d55', '#ff8a65', '#39ff14'
-        ];
-
-        function openModal() {
-            const nameDisplay = document.getElementById('sensiNameDisplay');
-            const randomSensi = sensiList[Math.floor(Math.random() * sensiList.length)];
-            const randomColor = sensiColors[Math.floor(Math.random() * sensiColors.length)];
-
-            nameDisplay.innerText = randomSensi;
-            nameDisplay.style.color = randomColor;
-            nameDisplay.style.textShadow = `0 0 15px ${randomColor}, 0 0 30px ${randomColor}`;
-
-            document.getElementById('mySensiModal').style.display = 'flex';
+    // ══════════════════════════════
+    //  Toggle Menu
+    // ══════════════════════════════
+    function toggleMenu() {
+        const menu = document.getElementById('modMenu');
+        const icon = document.getElementById('reopenIcon');
+        if (menu.style.display === 'none') {
+            menu.style.display = 'flex';
+            icon.style.display = 'none';
+        } else {
+            menu.style.display = 'none';
+            icon.style.display = 'block';
         }
-        
-        function closeModal() {
-            document.getElementById('mySensiModal').style.display = 'none';
-        }
+    }
 
-        function updateSlider(sliderId, textId, suffix) {
-            const slider = document.getElementById(sliderId);
-            const text = document.getElementById(textId);
-            
-            if (slider.max === "1") {
-                text.innerText = slider.value === "1" ? "ON" : "OFF";
+    // ══════════════════════════════
+    //  Submerged / Milk styles
+    // ══════════════════════════════
+    const modMenu = document.getElementById('modMenu');
+
+    function updateSubmergedStyles() {
+        const menuRect = modMenu.getBoundingClientRect();
+        const milkLineY = menuRect.top + (menuRect.height / 2);
+
+        document.querySelectorAll('.submerged-check').forEach(group => {
+            const r = group.getBoundingClientRect();
+            if (r.top > milkLineY - 10) {
+                if (!group.classList.contains('submerged')) {
+                    group.classList.add('submerged');
+                    const s = group.querySelector('input[type=range]');
+                    if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d=>d.id===s.id)?.suf||'%');
+                }
             } else {
-                text.innerText = slider.value + suffix;
-            }
-            
-            const min = slider.min || 0;
-            const max = slider.max || 100;
-            const percentage = ((slider.value - min) / (max - min)) * 100;
-            
-            const isSubmerged = slider.closest('.control-group').classList.contains('submerged');
-            const fillColor = isSubmerged ? '#111111' : '#ffffff';
-            const emptyColor = isSubmerged ? 'rgba(0,0,0,0.15)' : 'rgba(255, 255, 255, 0.15)';
-            
-            slider.style.setProperty('--perc', percentage + '%');
-            slider.style.setProperty('--fill-c', fillColor);
-            slider.style.setProperty('--empty-c', emptyColor);
-        }
-
-        function updateSliderColor(slider) {
-            if(!slider) return;
-            let suffix = '%';
-            if (slider.max === "1") suffix = '';
-            if (slider.id === 'fov') suffix = '°';
-            updateSlider(slider.id, 'val-' + slider.id, suffix);
-        }
-
-        const sliders = ['fov', 'hs', 'recoil', 'easyhead', 'aim_rage', 'aim_awp', 'aim_script', 'aim_m1018', 'regedit', 'gruda'];
-        sliders.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.value = 0;
-                let suf = '%';
-                if(el.max === "1") suf = '';
-                if(id === 'fov') suf = '°';
-                updateSlider(id, 'val-' + id, suf);
-                
-                if(id !== 'fov') {
-                    el.addEventListener('input', () => updateSlider(id, 'val-' + id, suf));
+                if (group.classList.contains('submerged')) {
+                    group.classList.remove('submerged');
+                    const s = group.querySelector('input[type=range]');
+                    if (s) updateSlider(s.id, 'val-' + s.id, sliderDefs.find(d=>d.id===s.id)?.suf||'%');
                 }
             }
         });
 
-        function toggleMenu() {
-            const menu = document.getElementById('modMenu');
-            const icon = document.getElementById('reopenIcon');
-            if (menu.style.display === 'none') {
-                menu.style.display = 'flex';
-                icon.style.display = 'none';
-            } else {
-                menu.style.display = 'none';
-                icon.style.display = 'block';
+        document.querySelectorAll('.submerged-banner-title').forEach(title => {
+            const r = title.closest('.section-banner').getBoundingClientRect();
+            if (r.top > milkLineY - 30) title.classList.add('submerged-title');
+            else title.classList.remove('submerged-title');
+        });
+    }
+
+    document.querySelectorAll('.menu-content').forEach(mc => {
+        mc.addEventListener('scroll', updateSubmergedStyles);
+    });
+    setTimeout(updateSubmergedStyles, 120);
+
+    // ══════════════════════════════
+    //  Drag to move menu
+    // ══════════════════════════════
+    const menu = document.getElementById('modMenu');
+    const header = document.querySelector('.menu-header');
+    let dragging = false, startX, startY, menuX, menuY;
+
+    // Init position
+    menuX = window.innerWidth / 2 - menu.offsetWidth / 2;
+    menuY = window.innerHeight / 2 - menu.offsetHeight / 2;
+    menu.style.transform = 'none';
+    menu.style.left = menuX + 'px';
+    menu.style.top  = menuY + 'px';
+
+    function onDragStart(ex, ey) {
+        dragging = true;
+        startX = ex - menuX;
+        startY = ey - menuY;
+        menu.classList.add('dragging');
+    }
+    function onDragMove(ex, ey) {
+        if (!dragging) return;
+        menuX = ex - startX;
+        menuY = ey - startY;
+        // Clamp within viewport
+        menuX = Math.max(0, Math.min(window.innerWidth - menu.offsetWidth, menuX));
+        menuY = Math.max(0, Math.min(window.innerHeight - menu.offsetHeight, menuY));
+        menu.style.left = menuX + 'px';
+        menu.style.top  = menuY + 'px';
+    }
+    function onDragEnd() {
+        dragging = false;
+        menu.classList.remove('dragging');
+    }
+
+    // Mouse
+    header.addEventListener('mousedown', e => { e.preventDefault(); onDragStart(e.clientX, e.clientY); });
+    document.addEventListener('mousemove', e => onDragMove(e.clientX, e.clientY));
+    document.addEventListener('mouseup', onDragEnd);
+
+    // Touch
+    header.addEventListener('touchstart', e => { const t=e.touches[0]; onDragStart(t.clientX, t.clientY); }, {passive:true});
+    document.addEventListener('touchmove', e => { const t=e.touches[0]; onDragMove(t.clientX, t.clientY); }, {passive:true});
+    document.addEventListener('touchend', onDragEnd);
+
+    // ══════════════════════════════════════════════════
+    //  THREE.JS — Milk layer only (transparent bg)
+    // ══════════════════════════════════════════════════
+
+    // — Milk Layer
+    const milkContainer = document.getElementById('milkLayer');
+    const milkScene = new THREE.Scene();
+    const milkCamera = new THREE.OrthographicCamera(-1,1,1,-1,0.1,10);
+    milkCamera.position.z = 1;
+    const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    milkContainer.appendChild(milkRenderer.domElement);
+    function resizeMilk() { milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight); }
+    resizeMilk();
+
+    const milkUniforms = { time: {value:0}, resolution: {value: new THREE.Vector2()} };
+    const milkMat = new THREE.ShaderMaterial({
+        uniforms: milkUniforms,
+        vertexShader: `
+            uniform float time;
+            varying vec2 vUv;
+            varying float vWave;
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+                float surface = smoothstep(-0.6, 1.0, pos.y);
+                float w1 = sin(pos.x * 3.5 + time * 5.0) * 0.045;
+                float w2 = cos(pos.x * 6.2 - time * 3.8) * 0.022;
+                float w3 = sin(pos.x * 9.0 + time * 7.5) * 0.009;
+                float wave = (w1 + w2 + w3) * surface;
+                vWave = wave;
+                pos.y += wave;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
-        }
+        `,
+        fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+            varying float vWave;
 
-        const modMenu = document.getElementById('modMenu');
-        const contentContainer = document.getElementById('menuContent');
-        
-        const sectionIds = ['Combat', 'Blood', 'Config'];
-        const bannerTitles = sectionIds.map(id => document.getElementById(`title-${id.toLowerCase()}`));
-        const sectionContainers = sectionIds.map(id => document.getElementById(`sec-${id.toLowerCase()}`));
-        const submergedGroups = contentContainer.getElementsByClassName('submerged-check');
-
-        function updateSubmergedStyles() {
-            const menuRect = modMenu.getBoundingClientRect();
-            const milkLineY = menuRect.top + (menuRect.height / 2);
-
-            sectionContainers.forEach((container, index) => {
-                const bannerRect = container.querySelector('.section-banner').getBoundingClientRect();
-                if (bannerRect.top > milkLineY - 30) {
-                    bannerTitles[index].classList.add('submerged-title');
-                } else {
-                    bannerTitles[index].classList.remove('submerged-title');
-                }
-            });
-
-            for (let group of submergedGroups) {
-                const groupRect = group.getBoundingClientRect();
-                if (groupRect.top > milkLineY - 10) {
-                    if(!group.classList.contains('submerged')){
-                        group.classList.add('submerged');
-                        updateSliderColor(group.querySelector('input[type=range]'));
-                    }
-                } else {
-                    if(group.classList.contains('submerged')){
-                        group.classList.remove('submerged');
-                        updateSliderColor(group.querySelector('input[type=range]'));
-                    }
-                }
+            float rand(vec2 co) {
+                return fract(sin(dot(co, vec2(12.9898,78.233))) * 43758.5453);
             }
-        }
 
-        contentContainer.addEventListener('scroll', updateSubmergedStyles);
-        setTimeout(updateSubmergedStyles, 100);
+            void main() {
+                // Base milk gradient: deep blue-grey at bottom, near-white at top
+                vec3 deep   = vec3(0.78, 0.80, 0.88);
+                vec3 mid    = vec3(0.90, 0.91, 0.96);
+                vec3 surf   = vec3(0.97, 0.97, 1.00);
+                vec3 base   = mix(deep, mid, vUv.y);
+                base        = mix(base, surf, pow(vUv.y, 2.5));
 
-        const bgScene = new THREE.Scene();
-        bgScene.fog = new THREE.FogExp2(0x000000, 0.001);
-        const bgCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-        bgCamera.position.z = 1000;
-        const bgRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        bgRenderer.setPixelRatio(window.devicePixelRatio);
-        bgRenderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(bgRenderer.domElement);
+                // Surface shimmer highlight — thin band at the wave surface
+                float surfaceBand = smoothstep(0.0, 0.06, vWave + 0.01);
+                float shimmer = surfaceBand * (0.5 + 0.5 * sin(vUv.x * 40.0 + time * 8.0));
+                base += shimmer * vec3(1.0, 1.0, 1.0) * 0.07;
 
-        const bgGeometry = new THREE.BufferGeometry();
-        const particles = 2000;
-        const positions = new Float32Array(particles * 3);
-        for ( let i = 0; i < positions.length; i += 3 ) {
-            positions[ i ] = (Math.random() - 0.5) * 2000;
-            positions[ i + 1 ] = (Math.random() - 0.5) * 2000;
-            positions[ i + 2 ] = (Math.random() - 0.5) * 2000;
-        }
-        bgGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                // Subtle lateral caustic ripples
+                float caustic = sin(vUv.x * 22.0 + time * 3.5) * sin(vUv.x * 13.0 - time * 2.1);
+                caustic = max(0.0, caustic) * vUv.y * 0.04;
+                base += caustic;
 
-        const canvasParticle = document.createElement('canvas');
-        canvasParticle.width = 16; canvasParticle.height = 16;
-        const contextParticle = canvasParticle.getContext('2d');
-        const gradient = contextParticle.createRadialGradient(8, 8, 0, 8, 8, 8);
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(1, 'rgba(255,255,255,0)');
-        contextParticle.fillStyle = gradient;
-        contextParticle.fillRect(0, 0, 16, 16);
-        const textureParticle = new THREE.CanvasTexture(canvasParticle);
+                // Slight depth tint on the very bottom edge
+                float edge = 1.0 - smoothstep(0.0, 0.12, vUv.y);
+                base = mix(base, vec3(0.70, 0.73, 0.84), edge * 0.4);
 
-        const bgMaterial = new THREE.PointsMaterial({
-            size: 6, map: textureParticle, transparent: true, opacity: 0.8,
-            blending: THREE.AdditiveBlending, depthWrite: false
-        });
-        const particleSystem = new THREE.Points(bgGeometry, bgMaterial);
-        bgScene.add(particleSystem);
+                gl_FragColor = vec4(clamp(base, 0.0, 1.0), 0.97);
+            }
+        `,
+        transparent: true
+    });
+    const milkMesh = new THREE.Mesh(new THREE.PlaneGeometry(3,2,64,32), milkMat);
+    milkMesh.position.y = -1.0;
+    milkScene.add(milkMesh);
 
-        const milkContainer = document.getElementById('milkLayer');
-        const milkScene = new THREE.Scene();
-        const milkCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-        milkCamera.position.z = 1;
-        
-        const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        function resizeMilk() {
-            milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight);
-        }
-        milkContainer.appendChild(milkRenderer.domElement);
-        resizeMilk();
+    window.addEventListener('resize', resizeMilk);
 
-        const milkUniforms = {
-            time: { value: 0 },
-            sloshX: { value: 0 },
-            sloshY: { value: 0 }
-        };
-
-        const milkMaterial = new THREE.ShaderMaterial({
-            uniforms: milkUniforms,
-            vertexShader: `
-                uniform float time;
-                uniform float sloshX;
-                uniform float sloshY;
-                varying vec2 vUv;
-                
-                void main() {
-                    vUv = uv;
-                    vec3 pos = position;
-                    float surfaceIntensity = smoothstep(-1.0, 0.5, pos.y);
-                    float wave1 = sin(pos.x * 4.0 + time * 6.0) * 0.04;
-                    float wave2 = cos(pos.x * 6.0 - time * 4.0) * 0.02;
-                    
-                    pos.y += (wave1 + wave2) * surfaceIntensity;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                }
-            `,
-            fragmentShader: `
-                varying vec2 vUv;
-                void main() {
-                    vec3 colorTop = vec3(0.96, 0.96, 1.0);
-                    vec3 colorBottom = vec3(0.85, 0.85, 0.90);
-                    vec3 finalColor = mix(colorBottom, colorTop, vUv.y);
-                    gl_FragColor = vec4(finalColor, 0.96);
-                }
-            `,
-            transparent: true
-        });
-
-        const milkGeometry = new THREE.PlaneGeometry(3, 2, 64, 32);
-        const milkPlane = new THREE.Mesh(milkGeometry, milkMaterial);
-        milkPlane.position.y = -1.0; 
-        milkScene.add(milkPlane);
-
-        let mouseX = 0; let mouseY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-
-        document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX - windowHalfX);
-            mouseY = (event.clientY - windowHalfY);
-        });
-
-        window.addEventListener('resize', () => {
-            bgCamera.aspect = window.innerWidth / window.innerHeight;
-            bgCamera.updateProjectionMatrix();
-            bgRenderer.setSize(window.innerWidth, window.innerHeight);
-            resizeMilk();
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            particleSystem.rotation.y += 0.002;
-            particleSystem.rotation.x += 0.001;
-            bgCamera.position.x += (mouseX - bgCamera.position.x) * 0.05;
-            bgCamera.position.y += (- mouseY - bgCamera.position.y) * 0.05;
-            bgCamera.lookAt(bgScene.position);
-            bgRenderer.render(bgScene, bgCamera);
-
-            milkUniforms.time.value += 0.015;
-            milkRenderer.render(milkScene, milkCamera);
-        }
-        
-        animate();
+    // ── Render loop ──
+    function animate() {
+        requestAnimationFrame(animate);
+        milkUniforms.time.value += 0.015;
+        milkRenderer.render(milkScene, milkCamera);
+    }
+    animate();
     </script>
 </body>
 </html>
