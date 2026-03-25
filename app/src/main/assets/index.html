@@ -1054,6 +1054,7 @@
 
         let menuX = 0, menuY = 0;
         let iconX = 18, iconY = 18; // Default initial position
+        let lastX = 0, lastY = 0;
 
         function syncWindow() {
             if (typeof Android === 'undefined' || !Android.updateWindow) return;
@@ -1062,9 +1063,10 @@
             
             if (menu.style.display !== 'none') {
                 if (menuX === 0 && menuY === 0) {
-                    // Center it initially if not set
+                    // Center it precisely based on screen width
+                    // We use hardcoded 370 because that's the menu width
                     menuX = (window.innerWidth - 370) / 2;
-                    menuY = (window.innerHeight * 0.07); // approx 50% - height/2
+                    menuY = (window.innerHeight - (window.innerHeight * 0.86)) / 2;
                 }
                 Android.updateWindow(Math.floor(menuX), Math.floor(menuY), 370, Math.floor(window.innerHeight * 0.86));
             } else {
@@ -1126,16 +1128,27 @@
         function onDragStart(ex, ey) {
             initDragPosition();
             dragging = true;
-            startX = ex - menuX;
-            startY = ey - menuY;
+            lastX = ex;
+            lastY = ey;
             menu.classList.add('dragging');
         }
         function onDragMove(ex, ey) {
             if (!dragging) return;
-            menuX = ex - startX;
-            menuY = ey - startY;
+            // Use deltas to move the WindowManager window
+            let dx = ex - lastX;
+            let dy = ey - lastY;
+            
+            menuX += dx;
+            menuY += dy;
+            
+            // Constrain to screen
             menuX = Math.max(0, Math.min(window.innerWidth - 370, menuX));
             menuY = Math.max(0, Math.min(window.innerHeight - (window.innerHeight * 0.86), menuY));
+            
+            // We don't update lastX/Y here because the window moves with the finger,
+            // so the touch remains at the same relative position within the WebView.
+            // If the window lag behind, the system will report a new ex/ey which we then process as delta.
+            
             syncWindow();
         }
         function onDragEnd() {
