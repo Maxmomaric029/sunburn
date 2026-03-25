@@ -22,9 +22,6 @@ import android.webkit.WebViewClient;
 import android.net.Uri;
 import android.widget.Toast;
 import android.webkit.JavascriptInterface;
-import android.graphics.Region;
-import android.graphics.Rect;
-import android.view.ViewTreeObserver;
 import androidx.core.app.NotificationCompat;
 
 public class OverlayService extends Service {
@@ -52,14 +49,14 @@ public class OverlayService extends Service {
                 WindowManager.LayoutParams.TYPE_PHONE;
 
         params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 type,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT
         );
 
-        params.gravity = Gravity.TOP | Gravity.START;
+        params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = 0;
         params.y = 0;
 
@@ -81,18 +78,6 @@ public class OverlayService extends Service {
         
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.addJavascriptInterface(new OverlayInterface(), "Android");
-        
-        // Listen for internal insets to define touchable region
-        webView.getViewTreeObserver().addOnComputeInternalInsetsListener(insets -> {
-            insets.contentInsets.setEmpty();
-            insets.visibleInsets.setEmpty();
-            if (mTouchableRegion != null) {
-                insets.touchableRegion.set(mTouchableRegion);
-                insets.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_REGION);
-            } else {
-                insets.setTouchableInsets(ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME);
-            }
-        });
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -131,41 +116,32 @@ public class OverlayService extends Service {
         webView.loadUrl("file:///android_asset/index.html");
     }
 
-    private Region mTouchableRegion = null;
-
     private class OverlayInterface {
         @JavascriptInterface
+        public void updateWindow(int x, int y, int width, int height) {
+            webView.post(() -> {
+                float density = getResources().getDisplayMetrics().density;
+                params.x = (int) (x * density);
+                params.y = (int) (y * density);
+                params.width = (int) (width * density);
+                params.height = (int) (height * density);
+                windowManager.updateViewLayout(overlayView, params);
+            });
+        }
+
+        @JavascriptInterface
         public void setMenuState(boolean isOpen) {
-            // This is now legacy or can be used for other things
+            // No longer used, handled by updateWindow
         }
 
         @JavascriptInterface
         public void setTouchableRect(int x, int y, int width, int height) {
-            webView.post(() -> {
-                // Ensure the view is fully covering the screen so coordinates match
-                if (params.width != WindowManager.LayoutParams.MATCH_PARENT || params.height != WindowManager.LayoutParams.MATCH_PARENT) {
-                    params.width = WindowManager.LayoutParams.MATCH_PARENT;
-                    params.height = WindowManager.LayoutParams.MATCH_PARENT;
-                    windowManager.updateViewLayout(overlayView, params);
-                }
-                
-                float density = getResources().getDisplayMetrics().density;
-                int left = (int) (x * density);
-                int top = (int) (y * density);
-                int right = (int) ((x + width) * density);
-                int bottom = (int) ((y + height) * density);
-                
-                mTouchableRegion = new Region(left, top, right, bottom);
-                webView.requestLayout(); // Trigger insets computation
-            });
+            updateWindow(x, y, width, height);
         }
 
         @JavascriptInterface
         public void clearTouchableRect() {
-            webView.post(() -> {
-                mTouchableRegion = null;
-                webView.requestLayout();
-            });
+            // No longer used
         }
     }
 

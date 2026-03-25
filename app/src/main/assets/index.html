@@ -140,10 +140,9 @@
 
         /* ── Main Menu ── */
         .mod-menu {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 370px;
             height: 86vh;
             background: var(--glass-bg);
@@ -675,9 +674,9 @@
         /* ── Reopen Icon ── */
         #reopenIcon {
             display: none;
-            position: fixed;
-            top: 18px;
-            left: 18px;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 44px;
             height: 44px;
             background: var(--glass-bg);
@@ -1050,19 +1049,26 @@
                 menu.style.display = 'none';
                 icon.style.display = 'block';
             }
-            syncTouchableRegion();
+            syncWindow();
         }
 
-        function syncTouchableRegion() {
-            if (typeof Android === 'undefined' || !Android.setTouchableRect) return;
+        let menuX = 0, menuY = 0;
+        let iconX = 18, iconY = 18; // Default initial position
+
+        function syncWindow() {
+            if (typeof Android === 'undefined' || !Android.updateWindow) return;
             const menu = document.getElementById('modMenu');
             const icon = document.getElementById('reopenIcon');
-            let target = (menu.style.display !== 'none') ? menu : icon;
-            if (target && target.style.display !== 'none') {
-                const r = target.getBoundingClientRect();
-                Android.setTouchableRect(Math.floor(r.left), Math.floor(r.top), Math.ceil(r.width), Math.ceil(r.height));
+            
+            if (menu.style.display !== 'none') {
+                if (menuX === 0 && menuY === 0) {
+                    // Center it initially if not set
+                    menuX = (window.innerWidth - 370) / 2;
+                    menuY = (window.innerHeight * 0.07); // approx 50% - height/2
+                }
+                Android.updateWindow(Math.floor(menuX), Math.floor(menuY), 370, Math.floor(window.innerHeight * 0.86));
             } else {
-                Android.clearTouchableRect();
+                Android.updateWindow(iconX, iconY, 44, 44);
             }
         }
 
@@ -1109,17 +1115,12 @@
         // ══════════════════════════════
         const menu = document.getElementById('modMenu');
         const header = document.querySelector('.menu-header');
-        let dragging = false, startX, startY, menuX, menuY, initiated = false;
+        let dragging = false, startX, startY, initiated = false;
 
         function initDragPosition() {
             if (initiated) return;
             initiated = true;
-            const r = menu.getBoundingClientRect();
-            menuX = r.left;
-            menuY = r.top;
-            menu.style.transform = 'none';
-            menu.style.left = menuX + 'px';
-            menu.style.top = menuY + 'px';
+            // No need to set left/top here, we use updateWindow
         }
 
         function onDragStart(ex, ey) {
@@ -1133,11 +1134,9 @@
             if (!dragging) return;
             menuX = ex - startX;
             menuY = ey - startY;
-            menuX = Math.max(0, Math.min(window.innerWidth - menu.offsetWidth, menuX));
-            menuY = Math.max(0, Math.min(window.innerHeight - menu.offsetHeight, menuY));
-            menu.style.left = menuX + 'px';
-            menu.style.top = menuY + 'px';
-            syncTouchableRegion();
+            menuX = Math.max(0, Math.min(window.innerWidth - 370, menuX));
+            menuY = Math.max(0, Math.min(window.innerHeight - (window.innerHeight * 0.86), menuY));
+            syncWindow();
         }
         function onDragEnd() {
             dragging = false;
@@ -1229,13 +1228,20 @@
         window.addEventListener('resize', resizeMilk);
 
         // ── Render loop ──
+        animate();
+
+        // ── Render loop ──
         function animate() {
             requestAnimationFrame(animate);
-            milkUniforms.time.value += 0.015;
-            milkRenderer.render(milkScene, milkCamera);
+            if (typeof milkUniforms !== 'undefined') {
+                milkUniforms.time.value += 0.015;
+            }
+            if (typeof milkRenderer !== 'undefined' && typeof milkScene !== 'undefined' && typeof milkCamera !== 'undefined') {
+                milkRenderer.render(milkScene, milkCamera);
+            }
         }
-        animate();
-        setTimeout(syncTouchableRegion, 500);
+        
+        setTimeout(syncWindow, 500);
     </script>
 </body>
 
