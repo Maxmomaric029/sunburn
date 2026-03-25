@@ -118,6 +118,16 @@ public class OverlayService extends Service {
 
     private class OverlayInterface {
         @JavascriptInterface
+        public int getScreenWidth() {
+            return (int) (getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density);
+        }
+
+        @JavascriptInterface
+        public int getScreenHeight() {
+            return (int) (getResources().getDisplayMetrics().heightPixels / getResources().getDisplayMetrics().density);
+        }
+
+        @JavascriptInterface
         public void updateWindow(int x, int y, int width, int height) {
             webView.post(() -> {
                 float density = getResources().getDisplayMetrics().density;

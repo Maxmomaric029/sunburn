@@ -1063,10 +1063,10 @@
             
             if (menu.style.display !== 'none') {
                 if (menuX === 0 && menuY === 0) {
-                    // Center it precisely based on screen width
-                    // We use hardcoded 370 because that's the menu width
-                    menuX = (window.innerWidth - 370) / 2;
-                    menuY = (window.innerHeight - (window.innerHeight * 0.86)) / 2;
+                    const screenWidth = (typeof Android.getScreenWidth === 'function') ? Android.getScreenWidth() : window.innerWidth;
+                    const screenHeight = (typeof Android.getScreenHeight === 'function') ? Android.getScreenHeight() : window.innerHeight;
+                    menuX = (screenWidth - 370) / 2;
+                    menuY = (screenHeight - (screenHeight * 0.86)) / 2;
                 }
                 Android.updateWindow(Math.floor(menuX), Math.floor(menuY), 370, Math.floor(window.innerHeight * 0.86));
             } else {
