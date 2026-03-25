@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SUNBURN 3D Fixed Menu</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: transparent;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; 
+        }
+
+        #fovCircle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5), inset 0 0 10px rgba(255,255,255,0.3);
+            pointer-events: none;
+            display: none;
+            z-index: 9999;
+            transition: width 0.1s, height 0.1s;
+        }
+
+        #mySensiModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.1);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            line-height: 1.4;
+        }
+        
+        #sensiNameDisplay {
+            display: block;
+            font-size: 32px;
+            margin-top: 10px;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .modal-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 30px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-btn:active { transform: scale(0.95); }
+        .modal-btn:hover { box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+
+        :root {
+            --glass-bg: rgba(15, 15, 15, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --milk-color: rgba(245, 245, 255, 0.95);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent: #ffffff;
+        }
+
+        .mod-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            width: 380px;
+            height: 85vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .menu-header {
+            padding: 18px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: default; 
+            position: relative;
+            z-index: 10;
+        }
+
+        .menu-title {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--milk-color); 
+            -webkit-text-stroke: 2px #000000;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+            margin: 0;
+        }
+
+        .close-btn {
+            color: var(--text-main);
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .close-btn:hover { transform: scale(1.1); }
+
+        .milk-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .menu-content {
+            padding: 0;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+            position: relative;
+            z-index: 2;
+            height: 100%;
+        }
+
+        .menu-content::-webkit-scrollbar { width: 4px; }
+        .menu-content::-webkit-scrollbar-track { background: transparent; }
+        .menu-content::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+        .content-inner { padding-bottom: 20px; }
+
+        /* Estilos sumergidos */
+        .submerged, .submerged .control-header span, .submerged .control-value {
+            color: #111111 !important;
+            text-shadow: none !important;
+            font-weight: 800;
+            transition: color 0.2s;
+        }
+        .submerged input[type=range]::-webkit-slider-thumb { background: #111111 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important; }
+        .submerged .target-btn { border-color: rgba(0,0,0,0.3) !important; color: #111 !important; }
+        .submerged .target-btn.active { background: #111 !important; color: #fff !important; }
+        .submerged .action-btn { background: #111 !important; color: #fff !important; border-color: #111 !important; }
+        
+        /* Switches sumergidos */
+        .submerged .switch-track { background: rgba(0,0,0,0.15) !important; border-color: rgba(0,0,0,0.3) !important; }
+        .submerged .switch-thumb { background: #111 !important; }
+        .submerged input[type="checkbox"]:checked + .switch-track { background: #111 !important; border-color: #111 !important; }
+        .submerged input[type="checkbox"]:checked + .switch-track .switch-thumb { background: #fff !important; }
+
+        .section {
+            padding: 20px 20px 5px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .section:last-child { border-bottom: none; }
+
+        .section-banner {
+            width: 100%;
+            height: 80px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, filter 0.3s ease;
+            cursor: crosshair;
+        }
+
+        .section-banner:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            filter: brightness(1.1);
+            z-index: 5;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            position: relative;
+            z-index: 1;
+            transition: all 0.2s;
+        }
+
+        .submerged-title {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #000 !important;
+            text-shadow: none !important;
+        }
+
+        .control-group { margin-bottom: 25px; transition: all 0.2s; }
+        .control-group.small-margin { margin-bottom: 15px; }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .control-value {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Switches Custom CSS */
+        .switch-container {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .switch-track {
+            width: 38px;
+            height: 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            position: relative;
+            transition: background 0.3s, border-color 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .switch-thumb {
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .switch-container input[type="checkbox"] { display: none; }
+        .switch-container input[type="checkbox"]:checked + .switch-track {
+            background: #fff;
+            border-color: #fff;
+        }
+        .switch-container input[type="checkbox"]:checked + .switch-track .switch-thumb {
+            transform: translateX(18px);
+            background: #000;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            height: 24px;
+            display: flex;
+            align-items: center;
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--fill-c, #ffffff) var(--perc, 0%), var(--empty-c, rgba(255,255,255,0.15)) var(--perc, 0%));
+            border-radius: 10px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+        .target-selector {
+            display: flex;
+            gap: 5px;
+            background: rgba(0,0,0,0.2);
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+        .target-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .target-btn.active { background: var(--accent); color: #000; box-shadow: 0 2px 10px rgba(255,255,255,0.2); }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        .action-btn:hover { background: rgba(255,255,255,0.1); }
+        .action-btn:active { transform: scale(0.98); }
+
+        #reopenIcon {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-weight: 800;
+            text-align: center;
+            line-height: 43px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fovCircle"></div>
+
+    <div id="mySensiModal">
+        <div class="modal-box">
+            <h2 class="modal-title">Sensi <span id="sensiNameDisplay"></span>?</h2>
+            <button class="modal-btn" onclick="closeModal()">Cargar</button>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="mod-menu" id="modMenu">
+        <div class="menu-header" id="menuHeader">
+            <h1 class="menu-title">SUNBURN</h1>
+            <div class="close-btn" onclick="toggleMenu()">✕</div>
+        </div>
+
+        <div class="milk-layer" id="milkLayer"></div>
+
+        <div class="menu-content" id="menuContent">
+            <div class="content-inner" id="contentInner">
+                
+                <div class="section" id="sec-combat">
+                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/d0/1a/5d/d01a5d62d2a2e90e3a96fdbba7113dce.gif');">
+                        <div class="section-title" id="title-combat">Combat</div>
+                    </div>
+                    
+                    <div class="control-group submerged-check small-margin">
+                        <div class="control-header">
+                            <span>Aimlock FOV</span>
+                            <span class="control-value" id="val-fov">0°</span>
+                        </div>
+                        <input type="range" id="fov" min="0" max="360" value="0" oninput="updateFOV(this.value)">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="target-selector">
+                            <div class="target-btn active" onclick="setTarget(this)">Pecho</div>
+                            <div class="target-btn" onclick="setTarget(this)">Cuello</div>
+                            <div class="target-btn" onclick="setTarget(this)">Cabeza</div>
+                        </div>
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>HS Rate</span>
+                            <span class="control-value" id="val-hs">0%</span>
+                        </div>
+                        <input type="range" id="hs" min="0" max="100" value="0" oninput="updateSlider('hs', 'val-hs', '%')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>No Recoil</span>
+                            <span class="control-value" id="val-recoil">0%</span>
+                        </div>
+                        <input type="range" id="recoil" min="0" max="100" value="0" oninput="updateSlider('recoil', 'val-recoil', '%')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Easy Head</span>
+                            <span class="control-value" id="val-easyhead">0%</span>
+                        </div>
+                        <input type="range" id="easyhead" min="0" max="100" value="0" oninput="updateSlider('easyhead', 'val-easyhead', '%')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Aimbot - rage</span>
+                            <span class="control-value" id="val-aim_rage">OFF</span>
+                        </div>
+                        <input type="range" id="aim_rage" min="0" max="1" value="0" oninput="updateSlider('aim_rage', 'val-aim_rage', '')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>SemiAimbot - Awp</span>
+                            <span class="control-value" id="val-aim_awp">OFF</span>
+                        </div>
+                        <input type="range" id="aim_awp" min="0" max="1" value="0" oninput="updateSlider('aim_awp', 'val-aim_awp', '')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Fully Aimbot - script</span>
+                            <span class="control-value" id="val-aim_script">OFF</span>
+                        </div>
+                        <input type="range" id="aim_script" min="0" max="1" value="0" oninput="updateSlider('aim_script', 'val-aim_script', '')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Aimbot - m1018</span>
+                            <span class="control-value" id="val-aim_m1018">OFF</span>
+                        </div>
+                        <input type="range" id="aim_m1018" min="0" max="1" value="0" oninput="updateSlider('aim_m1018', 'val-aim_m1018', '')">
+                    </div>
+                </div>
+
+                <div class="section" id="sec-blood">
+                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/b8/6f/e5/b86fe51d6dbf77b7b698b13ae3c56335.gif');">
+                        <div class="section-title" id="title-blood">Blood</div>
+                    </div>
+                    
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>👺 𝐑𝐞𝐠𝐞𝐝𝐢𝐭 𝐅𝐮𝐥𝐥 𝐕𝐞𝐫𝐦𝐞𝐥𝐡𝐨</span>
+                            <span class="control-value" id="val-regedit">0%</span>
+                        </div>
+                        <input type="range" id="regedit" min="0" max="100" value="0" oninput="updateSlider('regedit', 'val-regedit', '%')">
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>💀 𝐀𝐮𝐱𝐢𝐥𝐢𝐨 𝐆𝐫𝐮𝐝𝐚 [𝐕𝐈𝐏]</span>
+                            <span class="control-value" id="val-gruda">0%</span>
+                        </div>
+                        <input type="range" id="gruda" min="0" max="100" value="0" oninput="updateSlider('gruda', 'val-gruda', '%')">
+                    </div>
+                </div>
+
+                <div class="section" id="sec-config">
+                    <div class="section-banner submerged-banner-check" style="background-image: url('https://i.pinimg.com/originals/09/fa/e4/09fae4879b5c83ac5620f3e0b75156fb.gif');">
+                        <div class="section-title" id="title-config">Config</div>
+                    </div>
+                    
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Sensi Bloodz</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="bloodz">
+                                <div class="switch-track"><div class="switch-thumb"></div></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <div class="control-header">
+                            <span>Sensi Bloodie</span>
+                            <label class="switch-container">
+                                <input type="checkbox" id="bloodie">
+                                <div class="switch-track"><div class="switch-thumb"></div></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group submerged-check">
+                        <button class="action-btn" onclick="openModal()">My Sensi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reopenIcon" onclick="toggleMenu()">S</div>
+
+    <script>
+        let fovTimeout;
+        const fovCircle = document.getElementById('fovCircle');
+        
+        function updateFOV(val) {
+            updateSlider('fov', 'val-fov', '°');
+            fovCircle.style.display = 'block';
+            const size = val * 1.5; 
+            fovCircle.style.width = size + 'px';
+            fovCircle.style.height = size + 'px';
+            
+            clearTimeout(fovTimeout);
+            fovTimeout = setTimeout(() => {
+                fovCircle.style.display = 'none';
+            }, 800);
+        }
+
+        function setTarget(el) {
+            const siblings = el.parentElement.children;
+            for(let s of siblings) s.classList.remove('active');
+            el.classList.add('active');
+        }
+
+        const sensiList = [
+            "Strongest Sorcerer", "Ninja Slayer", "King of Heroes", 
+            "Throne Remnant", "Ancient Shard", "Golden Essence", "King of Heroes Armor", 
+            "Phantasm Core", "Manipulator", "Solo Hunter", "Gryphon", "Excalibur", 
+            "Dark Blade", "Katana", "Blessed Maiden", "Tempest Relic", "Corrupted Knight", 
+            "Dark Grail", "Curse King", "Light", "Blood", "D"
+        ];
+        
+        const sensiColors = [
+            '#ff3b30', '#ff9500', '#34c759', '#00c7be', '#32ade6', 
+            '#007aff', '#5856d6', '#af52de', '#ff2d55', '#ff8a65', '#39ff14'
+        ];
+
+        function openModal() {
+            const nameDisplay = document.getElementById('sensiNameDisplay');
+            const randomSensi = sensiList[Math.floor(Math.random() * sensiList.length)];
+            const randomColor = sensiColors[Math.floor(Math.random() * sensiColors.length)];
+
+            nameDisplay.innerText = randomSensi;
+            nameDisplay.style.color = randomColor;
+            nameDisplay.style.textShadow = `0 0 15px ${randomColor}, 0 0 30px ${randomColor}`;
+
+            document.getElementById('mySensiModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('mySensiModal').style.display = 'none';
+        }
+
+        function updateSlider(sliderId, textId, suffix) {
+            const slider = document.getElementById(sliderId);
+            const text = document.getElementById(textId);
+            
+            if (slider.max === "1") {
+                text.innerText = slider.value === "1" ? "ON" : "OFF";
+            } else {
+                text.innerText = slider.value + suffix;
+            }
+            
+            const min = slider.min || 0;
+            const max = slider.max || 100;
+            const percentage = ((slider.value - min) / (max - min)) * 100;
+            
+            const isSubmerged = slider.closest('.control-group').classList.contains('submerged');
+            const fillColor = isSubmerged ? '#111111' : '#ffffff';
+            const emptyColor = isSubmerged ? 'rgba(0,0,0,0.15)' : 'rgba(255, 255, 255, 0.15)';
+            
+            slider.style.setProperty('--perc', percentage + '%');
+            slider.style.setProperty('--fill-c', fillColor);
+            slider.style.setProperty('--empty-c', emptyColor);
+        }
+
+        function updateSliderColor(slider) {
+            if(!slider) return;
+            let suffix = '%';
+            if (slider.max === "1") suffix = '';
+            if (slider.id === 'fov') suffix = '°';
+            updateSlider(slider.id, 'val-' + slider.id, suffix);
+        }
+
+        const sliders = ['fov', 'hs', 'recoil', 'easyhead', 'aim_rage', 'aim_awp', 'aim_script', 'aim_m1018', 'regedit', 'gruda'];
+        sliders.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = 0;
+                let suf = '%';
+                if(el.max === "1") suf = '';
+                if(id === 'fov') suf = '°';
+                updateSlider(id, 'val-' + id, suf);
+                
+                if(id !== 'fov') {
+                    el.addEventListener('input', () => updateSlider(id, 'val-' + id, suf));
+                }
+            }
+        });
+
+        function toggleMenu() {
+            const menu = document.getElementById('modMenu');
+            const icon = document.getElementById('reopenIcon');
+            if (menu.style.display === 'none') {
+                menu.style.display = 'flex';
+                icon.style.display = 'none';
+            } else {
+                menu.style.display = 'none';
+                icon.style.display = 'block';
+            }
+        }
+
+        const modMenu = document.getElementById('modMenu');
+        const contentContainer = document.getElementById('menuContent');
+        
+        const sectionIds = ['Combat', 'Blood', 'Config'];
+        const bannerTitles = sectionIds.map(id => document.getElementById(`title-${id.toLowerCase()}`));
+        const sectionContainers = sectionIds.map(id => document.getElementById(`sec-${id.toLowerCase()}`));
+        const submergedGroups = contentContainer.getElementsByClassName('submerged-check');
+
+        function updateSubmergedStyles() {
+            const menuRect = modMenu.getBoundingClientRect();
+            const milkLineY = menuRect.top + (menuRect.height / 2);
+
+            sectionContainers.forEach((container, index) => {
+                const bannerRect = container.querySelector('.section-banner').getBoundingClientRect();
+                if (bannerRect.top > milkLineY - 30) {
+                    bannerTitles[index].classList.add('submerged-title');
+                } else {
+                    bannerTitles[index].classList.remove('submerged-title');
+                }
+            });
+
+            for (let group of submergedGroups) {
+                const groupRect = group.getBoundingClientRect();
+                if (groupRect.top > milkLineY - 10) {
+                    if(!group.classList.contains('submerged')){
+                        group.classList.add('submerged');
+                        updateSliderColor(group.querySelector('input[type=range]'));
+                    }
+                } else {
+                    if(group.classList.contains('submerged')){
+                        group.classList.remove('submerged');
+                        updateSliderColor(group.querySelector('input[type=range]'));
+                    }
+                }
+            }
+        }
+
+        contentContainer.addEventListener('scroll', updateSubmergedStyles);
+        setTimeout(updateSubmergedStyles, 100);
+
+        const bgScene = new THREE.Scene();
+        bgScene.fog = new THREE.FogExp2(0x000000, 0.001);
+        const bgCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+        bgCamera.position.z = 1000;
+        const bgRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        bgRenderer.setPixelRatio(window.devicePixelRatio);
+        bgRenderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(bgRenderer.domElement);
+
+        const bgGeometry = new THREE.BufferGeometry();
+        const particles = 2000;
+        const positions = new Float32Array(particles * 3);
+        for ( let i = 0; i < positions.length; i += 3 ) {
+            positions[ i ] = (Math.random() - 0.5) * 2000;
+            positions[ i + 1 ] = (Math.random() - 0.5) * 2000;
+            positions[ i + 2 ] = (Math.random() - 0.5) * 2000;
+        }
+        bgGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const canvasParticle = document.createElement('canvas');
+        canvasParticle.width = 16; canvasParticle.height = 16;
+        const contextParticle = canvasParticle.getContext('2d');
+        const gradient = contextParticle.createRadialGradient(8, 8, 0, 8, 8, 8);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        contextParticle.fillStyle = gradient;
+        contextParticle.fillRect(0, 0, 16, 16);
+        const textureParticle = new THREE.CanvasTexture(canvasParticle);
+
+        const bgMaterial = new THREE.PointsMaterial({
+            size: 6, map: textureParticle, transparent: true, opacity: 0.8,
+            blending: THREE.AdditiveBlending, depthWrite: false
+        });
+        const particleSystem = new THREE.Points(bgGeometry, bgMaterial);
+        bgScene.add(particleSystem);
+
+        const milkContainer = document.getElementById('milkLayer');
+        const milkScene = new THREE.Scene();
+        const milkCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+        milkCamera.position.z = 1;
+        
+        const milkRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        function resizeMilk() {
+            milkRenderer.setSize(milkContainer.clientWidth, milkContainer.clientHeight);
+        }
+        milkContainer.appendChild(milkRenderer.domElement);
+        resizeMilk();
+
+        const milkUniforms = {
+            time: { value: 0 },
+            sloshX: { value: 0 },
+            sloshY: { value: 0 }
+        };
+
+        const milkMaterial = new THREE.ShaderMaterial({
+            uniforms: milkUniforms,
+            vertexShader: `
+                uniform float time;
+                uniform float sloshX;
+                uniform float sloshY;
+                varying vec2 vUv;
+                
+                void main() {
+                    vUv = uv;
+                    vec3 pos = position;
+                    float surfaceIntensity = smoothstep(-1.0, 0.5, pos.y);
+                    float wave1 = sin(pos.x * 4.0 + time * 6.0) * 0.04;
+                    float wave2 = cos(pos.x * 6.0 - time * 4.0) * 0.02;
+                    
+                    pos.y += (wave1 + wave2) * surfaceIntensity;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec2 vUv;
+                void main() {
+                    vec3 colorTop = vec3(0.96, 0.96, 1.0);
+                    vec3 colorBottom = vec3(0.85, 0.85, 0.90);
+                    vec3 finalColor = mix(colorBottom, colorTop, vUv.y);
+                    gl_FragColor = vec4(finalColor, 0.96);
+                }
+            `,
+            transparent: true
+        });
+
+        const milkGeometry = new THREE.PlaneGeometry(3, 2, 64, 32);
+        const milkPlane = new THREE.Mesh(milkGeometry, milkMaterial);
+        milkPlane.position.y = -1.0; 
+        milkScene.add(milkPlane);
+
+        let mouseX = 0; let mouseY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        window.addEventListener('resize', () => {
+            bgCamera.aspect = window.innerWidth / window.innerHeight;
+            bgCamera.updateProjectionMatrix();
+            bgRenderer.setSize(window.innerWidth, window.innerHeight);
+            resizeMilk();
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            particleSystem.rotation.y += 0.002;
+            particleSystem.rotation.x += 0.001;
+            bgCamera.position.x += (mouseX - bgCamera.position.x) * 0.05;
+            bgCamera.position.y += (- mouseY - bgCamera.position.y) * 0.05;
+            bgCamera.lookAt(bgScene.position);
+            bgRenderer.render(bgScene, bgCamera);
+
+            milkUniforms.time.value += 0.015;
+            milkRenderer.render(milkScene, milkCamera);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
