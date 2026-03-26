@@ -1,0 +1,59 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install XcodeGen
+      run: brew install xcodegen
+
+    - name: Sync UI Files
+      run: |
+        # Copiar el index.html y LOGO de la carpeta de Android a la de iOS
+        mkdir -p ios/SunburnOverlay
+        cp app/src/main/assets/index.html ios/SunburnOverlay/
+        cp app/src/main/assets/LOGO.jpeg ios/SunburnOverlay/
+
+    - name: Generate Xcode Project
+      run: |
+        cd ios
+        xcodegen generate
+
+    - name: Set up Signing
+      run: |
+        # Configurar firma automática o dummy para que no falle en CI
+        # xccommands: build
+        # No podemos firmar con una cuenta real aquí, pero podemos generar un .app para sideloading con AltStore
+        echo "CODE_SIGNING_ALLOWED=NO" >> $GITHUB_ENV
+
+    - name: Build for Simulator/Generic iOS
+      run: |
+        xcodebuild -project ios/SunburnOverlay.xcodeproj \
+                   -scheme SunburnOverlay \
+                   -sdk iphoneos \
+                   -configuration Debug \
+                   CODE_SIGNING_ALLOWED=NO \
+                   CODE_SIGNING_REQUIRED=NO \
+                   clean build
+
+    - name: Package .app to .ipa (Unsigned)
+      run: |
+        mkdir -p build/Payload
+        cp -r ios/build/Debug-iphoneos/SunburnOverlay.app build/Payload/
+        cd build && zip -r SunburnOverlay_unsigned.ipa Payload
+
+    - name: Upload iOS Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: sunburn-ios-unsigned
+        path: build/SunburnOverlay_unsigned.ipa
