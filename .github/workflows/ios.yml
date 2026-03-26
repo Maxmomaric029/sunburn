@@ -42,6 +42,7 @@ jobs:
                    -scheme SunburnOverlay \
                    -sdk iphoneos \
                    -configuration Debug \
+                   SYMROOT=$(pwd)/ios/build \
                    CODE_SIGNING_ALLOWED=NO \
                    CODE_SIGNING_REQUIRED=NO \
                    clean build
